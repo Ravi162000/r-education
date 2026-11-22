@@ -1,0 +1,302 @@
+name: Build R. Education Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-apk.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Generate Android Project and Extract App Icon
+        run: |
+          python3 - << 'PY'
+          import base64, os, re
+
+          def w(path, text):
+              os.makedirs(os.path.dirname(path), exist_ok=True)
+              with open(path, 'w', encoding='utf-8') as f:
+                  f.write(text)
+
+          w('android/settings.gradle', '''pluginManagement {
+              repositories { google(); mavenCentral(); gradlePluginPortal() }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories { google(); mavenCentral() }
+          }
+          rootProject.name = "REducation"
+          include ':app'
+          ''')
+
+          w('android/build.gradle', '''plugins {
+              id 'com.android.application' version '8.5.2' apply false
+          }
+          ''')
+
+          w('android/gradle.properties', '''org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          android.enableJetifier=true
+          ''')
+
+          w('android/app/build.gradle', '''plugins {
+              id 'com.android.application'
+          }
+          android {
+              namespace 'com.reducation.app'
+              compileSdk 34
+              defaultConfig {
+                  applicationId "com.reducation.app"
+                  minSdk 24
+                  targetSdk 34
+                  versionCode 1
+                  versionName "1.0"
+              }
+              buildTypes { release { minifyEnabled false } }
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.7.0'
+          }
+          ''')
+
+          w('android/app/src/main/AndroidManifest.xml', '''<?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.CAMERA" />
+              <uses-feature android:name="android.hardware.camera" android:required="false" />
+              <application
+                  android:allowBackup="true"
+                  android:icon="@mipmap/ic_launcher"
+                  android:roundIcon="@mipmap/ic_launcher"
+                  android:label="R. Education"
+                  android:supportsRtl="true"
+                  android:theme="@style/AppTheme"
+                  android:usesCleartextTraffic="true">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:configChanges="orientation|screenSize|keyboardHidden">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+                  <provider
+                      android:name="androidx.core.content.FileProvider"
+                      android:authorities="${applicationId}.fileprovider"
+                      android:exported="false"
+                      android:grantUriPermissions="true">
+                      <meta-data
+                          android:name="android.support.FILE_PROVIDER_PATHS"
+                          android:resource="@xml/file_paths" />
+                  </provider>
+              </application>
+          </manifest>
+          ''')
+
+          w('android/app/src/main/res/xml/file_paths.xml', '''<?xml version="1.0" encoding="utf-8"?>
+          <paths>
+              <cache-path name="camera_cache" path="." />
+              <external-path name="external_files" path="." />
+          </paths>
+          ''')
+
+          w('android/app/src/main/res/values/styles.xml', '''<?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+                  <item name="colorPrimary">#4F46E5</item>
+                  <item name="colorPrimaryDark">#3730A3</item>
+                  <item name="colorAccent">#00A884</item>
+                  <item name="android:statusBarColor">#3730A3</item>
+              </style>
+          </resources>
+          ''')
+
+          w('android/app/src/main/java/com/reducation/app/MainActivity.java', '''package com.reducation.app;
+
+          import android.Manifest;
+          import android.annotation.SuppressLint;
+          import android.app.Activity;
+          import android.app.DownloadManager;
+          import android.content.Intent;
+          import android.content.pm.PackageManager;
+          import android.net.Uri;
+          import android.os.Bundle;
+          import android.os.Environment;
+          import android.provider.MediaStore;
+          import android.util.Base64;
+          import android.webkit.*;
+          import android.widget.Toast;
+          import androidx.annotation.NonNull;
+          import androidx.appcompat.app.AppCompatActivity;
+          import androidx.core.app.ActivityCompat;
+          import androidx.core.content.ContextCompat;
+          import androidx.core.content.FileProvider;
+          import java.io.*;
+
+          public class MainActivity extends AppCompatActivity {
+              private static final String APP_URL = "https://ravi162000.github.io/r-education/";
+              private static final int FILE_REQ = 1001, CAM_REQ = 1002;
+              private WebView webView;
+              private ValueCallback<Uri[]> fileCallback;
+              private Uri camUri;
+              private PermissionRequest pendingPerm;
+
+              @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface"})
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  webView = new WebView(this);
+                  setContentView(webView);
+                  WebSettings ws = webView.getSettings();
+                  ws.setJavaScriptEnabled(true);
+                  ws.setDomStorageEnabled(true);
+                  ws.setDatabaseEnabled(true);
+                  ws.setAllowFileAccess(true);
+                  ws.setAllowContentAccess(true);
+                  ws.setMediaPlaybackRequiresUserGesture(false);
+                  ws.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+                  CookieManager.getInstance().setAcceptCookie(true);
+                  CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+                  webView.addJavascriptInterface(new BlobBridge(), "AndroidDownloader");
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.setWebChromeClient(new WebChromeClient() {
+                      @Override
+                      public void onPermissionRequest(final PermissionRequest req) {
+                          runOnUiThread(() -> {
+                              if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                                  req.grant(req.getResources());
+                              } else {
+                                  pendingPerm = req;
+                                  ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, CAM_REQ);
+                              }
+                          });
+                      }
+                      @Override
+                      public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> cb, FileChooserParams params) {
+                          if (fileCallback != null) fileCallback.onReceiveValue(null);
+                          fileCallback = cb;
+                          boolean cap = params != null && params.isCaptureEnabled();
+                          Intent get = new Intent(Intent.ACTION_GET_CONTENT);
+                          get.addCategory(Intent.CATEGORY_OPENABLE);
+                          String[] types = params != null ? params.getAcceptTypes() : new String[]{"*/*"};
+                          get.setType((types != null && types.length > 0 && types[0] != null && !types[0].isEmpty()) ? types[0] : "*/*");
+                          Intent cam = null;
+                          if (cap || (types != null && types.length > 0 && types[0].startsWith("image"))) {
+                              try {
+                                  File f = File.createTempFile("redu_", ".jpg", getCacheDir());
+                                  camUri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".fileprovider", f);
+                                  cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                  cam.putExtra(MediaStore.EXTRA_OUTPUT, camUri);
+                              } catch (IOException ignored) { camUri = null; }
+                          }
+                          if (cap && cam != null) { startActivityForResult(cam, FILE_REQ); return true; }
+                          Intent chooser = new Intent(Intent.ACTION_CHOOSER);
+                          chooser.putExtra(Intent.EXTRA_INTENT, get);
+                          if (cam != null) chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{cam});
+                          startActivityForResult(chooser, FILE_REQ);
+                          return true;
+                      }
+                  });
+                  webView.setDownloadListener((url, ua, cd, mime, len) -> {
+                      if (url != null && url.startsWith("blob:")) {
+                          webView.loadUrl("javascript:(function(){fetch('" + url + "').then(r=>r.blob()).then(b=>{var fr=new FileReader();fr.onloadend=function(){AndroidDownloader.savePdf(fr.result);};fr.readAsDataURL(b);});})()");
+                          return;
+                      }
+                      try {
+                          DownloadManager.Request r = new DownloadManager.Request(Uri.parse(url));
+                          String fn = URLUtil.guessFileName(url, cd, mime);
+                          r.setTitle(fn);
+                          r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                          r.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fn);
+                          ((DownloadManager) getSystemService(DOWNLOAD_SERVICE)).enqueue(r);
+                          Toast.makeText(this, "Downloading " + fn, Toast.LENGTH_SHORT).show();
+                      } catch (Exception ignored) {}
+                  });
+                  webView.loadUrl(APP_URL);
+              }
+              public class BlobBridge {
+                  @JavascriptInterface
+                  public void savePdf(String dataUrl) {
+                      try {
+                          String b64 = dataUrl.contains(",") ? dataUrl.substring(dataUrl.indexOf(",") + 1) : dataUrl;
+                          File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                          if (!dir.exists()) dir.mkdirs();
+                          File out = new File(dir, "REdu_" + System.currentTimeMillis() + ".pdf");
+                          try (FileOutputStream fos = new FileOutputStream(out)) { fos.write(Base64.decode(b64, Base64.DEFAULT)); }
+                          runOnUiThread(() -> Toast.makeText(MainActivity.this, "Saved to Downloads: " + out.getName(), Toast.LENGTH_LONG).show());
+                      } catch (Exception ignored) {}
+                  }
+              }
+              @Override
+              public void onRequestPermissionsResult(int rc, @NonNull String[] p, @NonNull int[] g) {
+                  super.onRequestPermissionsResult(rc, p, g);
+                  if (rc == CAM_REQ && pendingPerm != null) {
+                      if (g.length > 0 && g[0] == PackageManager.PERMISSION_GRANTED) pendingPerm.grant(pendingPerm.getResources());
+                      else pendingPerm.deny();
+                      pendingPerm = null;
+                  }
+              }
+              @Override
+              protected void onActivityResult(int rc, int res, Intent d) {
+                  super.onActivityResult(rc, res, d);
+                  if (rc == FILE_REQ && fileCallback != null) {
+                      Uri[] out = null;
+                      if (res == Activity.RESULT_OK) {
+                          if (d == null || d.getData() == null) { if (camUri != null) out = new Uri[]{camUri}; }
+                          else out = new Uri[]{d.getData()};
+                      }
+                      fileCallback.onReceiveValue(out);
+                      fileCallback = null;
+                  }
+              }
+              @Override
+              public void onBackPressed() {
+                  if (webView != null && webView.canGoBack()) webView.goBack();
+                  else super.onBackPressed();
+              }
+          }
+          ''')
+
+          html = open('index.html', encoding='utf-8').read()
+          m = re.search(r'sizes="192x192"\s+href="data:image/png;base64,([^"]+)"', html)
+          if m:
+              icon_bytes = base64.b64decode(m.group(1))
+              for d in ['mipmap-mdpi', 'mipmap-hdpi', 'mipmap-xhdpi', 'mipmap-xxhdpi', 'mipmap-xxxhdpi']:
+                  p = f'android/app/src/main/res/{d}/ic_launcher.png'
+                  os.makedirs(os.path.dirname(p), exist_ok=True)
+                  open(p, 'wb').write(icon_bytes)
+          PY
+
+      - name: Build Debug APK
+        working-directory: android
+        run: gradle assembleDebug --no-daemon
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk R_Education.apk
+
+      - name: Upload R_Education.apk Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: R_Education-APK
+          path: R_Education.apk
