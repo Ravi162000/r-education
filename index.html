@@ -3110,6 +3110,9 @@
           }
         }
 
+        if (typeof deleteAdminReportRowsByPdfIds === 'function' && removedPdfs.length) {
+          await deleteAdminReportRowsByPdfIds(removedPdfs.map(function (rp) { return rp.id; }));
+        }
         await pushCatalogToCloud();
         editingSubjectId = null;
         document.getElementById('editSubjectModal').classList.add('hidden');
@@ -3136,10 +3139,14 @@
             await fetch(fileNodeUrl, { method: 'DELETE' });
           } catch (e) {}
         }
+        if (typeof deleteAdminReportRowsByPdfIds === 'function') {
+          await deleteAdminReportRowsByPdfIds([id]);
+        }
         const syncedDel = await pushCatalogToCloud();
         state.pendingDeleteId = null;
         document.getElementById('deleteConfirmModal').classList.add('hidden');
         renderAll();
+        renderAdminReportSheet();
         showToast(syncedDel ? 'PDF deleted from all students\' devices!' : 'PDF deleted locally (check internet)');
       });
 
@@ -4663,26 +4670,51 @@
         } catch (e) {}
       }
 
-      function getCombinedAdminReportRows() {
-        const seenPdfIds = {};
-        const rows = [];
-        adminReportRows.forEach(function (r) {
-          if (r.pdfId) seenPdfIds[r.pdfId] = true;
-          rows.push(r);
-        });
-        // Include any existing uploaded PDFs that were uploaded before this report feature was added
-        state.pdfs.forEach(function (p) {
-          if (!seenPdfIds[p.id] && !String(p.id).startsWith('sample_')) {
-            const subj = state.subjects.find(function (x) { return x.id === p.subjectId; });
-            rows.push({
-              pdfId: p.id,
-              adminName: p.uploadedBy || 'Admin',
-              subjectName: subj ? subj.name : (p.subjectId || 'General'),
-              pdfName: p.title || p.fileName || 'Untitled PDF',
-              fileName: p.fileName || '',
-              uploadedAt: p.uploadedAt || 0
-            });
+      async function deleteAdminReportRowsByPdfIds(pdfIds) {
+        if (!pdfIds || !pdfIds.length) return;
+        const idSet = {};
+        pdfIds.forEach(function (pid) { if (pid) idSet[pid] = true; });
+        adminReportRows = adminReportRows.filter(function (r) { return !idSet[r.pdfId]; });
+        safeSet(STORAGE_KEY_ADMIN_REPORTS, adminReportRows);
+        try {
+          const base = getCloudConfig().firebaseUrl.replace(/\/+$/, '');
+          const r = await fetch(getAdminReportApiUrl() + '?t=' + Date.now(), { cache: 'no-store' });
+          if (r.ok) {
+            const data = await r.json();
+            if (data && typeof data === 'object') {
+              const keys = Object.keys(data);
+              for (let i = 0; i < keys.length; i++) {
+                const k = keys[i];
+                if (data[k] && idSet[data[k].pdfId]) {
+                  await fetch(base + '/r_edu_admin_reports/' + encodeURIComponent(k) + '.json', { method: 'DELETE' });
+                }
+              }
+            }
           }
+        } catch (e) {}
+      }
+
+      // Build report strictly from currently available live PDFs (deleted PDFs are automatically excluded)
+      function getCombinedAdminReportRows() {
+        const reportByPdfId = {};
+        adminReportRows.forEach(function (r) {
+          if (r && r.pdfId && !reportByPdfId[r.pdfId]) {
+            reportByPdfId[r.pdfId] = r;
+          }
+        });
+        const rows = [];
+        state.pdfs.forEach(function (p) {
+          if (String(p.id).startsWith('sample_')) return;
+          const saved = reportByPdfId[p.id];
+          const subj = state.subjects.find(function (x) { return x.id === p.subjectId; });
+          rows.push({
+            pdfId: p.id,
+            adminName: (p.uploadedBy || (saved && saved.adminName) || 'Admin').trim(),
+            subjectName: subj ? subj.name : ((saved && saved.subjectName) || p.subjectId || 'General'),
+            pdfName: p.title || p.fileName || (saved && saved.pdfName) || 'Untitled PDF',
+            fileName: p.fileName || '',
+            uploadedAt: p.uploadedAt || (saved && saved.uploadedAt) || 0
+          });
         });
         rows.sort(function (a, b) { return (b.uploadedAt || 0) - (a.uploadedAt || 0); });
         return rows;
@@ -4750,7 +4782,7 @@
         if (!state.isAdmin) return;
         document.getElementById('adminReportModal').classList.remove('hidden');
         renderAdminReportSheet();
-        await fetchAdminReportRows();
+        await Promise.all([pullCatalogFromCloud(true), fetchAdminReportRows()]);
         renderAdminReportSheet();
       });
 
