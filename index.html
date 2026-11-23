@@ -479,7 +479,7 @@
           <label id="dropZone" for="pdfFileInput" class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-xl p-4 cursor-pointer bg-slate-50 hover:bg-indigo-50/40 transition text-center">
             <svg class="w-8 h-8 text-indigo-500 mb-1" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
             <span id="selectedFileLabel" class="text-xs sm:text-sm font-medium text-slate-700">Click to select a PDF file or drag &amp; drop</span>
-            <span class="text-[11px] text-emerald-600 font-medium mt-0.5">Max 5 MB for direct upload &bull; Use Google Drive Link below for PDFs over 5 MB</span>
+            <span class="text-[11px] text-emerald-600 font-medium mt-0.5">Max 10 MB for direct upload &bull; Use Google Drive Link below for PDFs over 10 MB</span>
             <input id="pdfFileInput" type="file" accept="application/pdf,.pdf" class="hidden" />
           </label>
         </div>
@@ -1021,16 +1021,16 @@
     <img id="chatLightboxImg" src="" alt="Question Photo" class="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain" />
   </div>
 
-  <!-- 5 MB Direct Upload Limit Popup Modal -->
+  <!-- 10 MB Direct Upload Limit Popup Modal -->
   <div id="fileSizeLimitModal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 animate-fade-in text-center">
       <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
       </div>
       <div class="space-y-1.5">
-        <h4 class="text-base font-bold text-slate-900">File Size Exceeds 5 MB Limit</h4>
+        <h4 class="text-base font-bold text-slate-900">File Size Exceeds 10 MB Limit</h4>
         <p id="fileSizeLimitMsg" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-          Direct upload is limited to <strong>5 MB</strong> to save cloud storage. For PDFs larger than 5 MB, please upload the file to <strong>Google Drive</strong> (set access to "Anyone with the link") and paste the link in the <strong>Google Drive Link</strong> field.
+          Direct upload is limited to <strong>10 MB</strong> to save cloud storage. For PDFs larger than 10 MB, please upload the file to <strong>Google Drive</strong> (set access to "Anyone with the link") and paste the link in the <strong>Google Drive Link</strong> field.
         </p>
       </div>
       <button id="btnCloseSizeLimitModal" type="button" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-sm transition">
@@ -1079,6 +1079,10 @@
         channelId: 'r_education_global_2026',
         firebaseUrl: 'https://r-education-b05e0-default-rtdb.firebaseio.com'
       };
+      const FIREBASE_STORAGE_POOL = [
+        'https://r-education-b05e0-default-rtdb.firebaseio.com',
+        'https://r-education-2-default-rtdb.firebaseio.com'
+      ];
 
       const DEFAULT_SUBJECTS = [
         { id: 'math', name: 'Math', tagline: 'Arithmetic & Advance', color: 'indigo' },
@@ -1543,51 +1547,83 @@
         return decodeURIComponent(escape(atob(s)));
       }
 
-      // Upload PDF file directly to Firebase Realtime Database in chunks with live progress
+      // Upload PDF file directly across Multi-Firebase Auto-Storage Pool (round-robin + auto-failover)
       async function uploadPdfFileToCloudHost(file, bytes, onProgress) {
         const cfg = getCloudConfig();
-        const baseUrl = cfg.firebaseUrl.replace(/\/+$/, '');
+        const primaryUrl = cfg.firebaseUrl.replace(/\/+$/, '');
+        const pool = [];
+        FIREBASE_STORAGE_POOL.forEach(function (u) {
+          const clean = String(u || '').replace(/\/+$/, '');
+          if (clean && pool.indexOf(clean) === -1) pool.push(clean);
+        });
+        if (primaryUrl && pool.indexOf(primaryUrl) === -1) pool.unshift(primaryUrl);
+
+        let startIdx = 0;
+        try {
+          const savedIdx = parseInt(localStorage.getItem('r_edu_storage_node_idx') || '0', 10);
+          if (!isNaN(savedIdx) && pool.length > 0) startIdx = savedIdx % pool.length;
+        } catch (e) {}
+
         const channelKey = encodeURIComponent(cfg.channelId);
-        const fileId = 'file_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
         const b64 = uint8ToBase64(bytes);
         const CHUNK_SIZE = 500000; // ~500 KB per chunk for fast, reliable mobile uploads
         const totalChunks = Math.max(1, Math.ceil(b64.length / CHUNK_SIZE));
-        const startTime = Date.now();
+        let lastErr = null;
 
-        try {
-          for (let i = 0; i < totalChunks; i++) {
-            const chunkStr = b64.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-            const res = await fetch(baseUrl + '/r_edu_files/' + channelKey + '/' + fileId + '/chunks/' + i + '.json', {
+        for (let attempt = 0; attempt < pool.length; attempt++) {
+          const nodeIdx = (startIdx + attempt) % pool.length;
+          const baseUrl = pool[nodeIdx];
+          const serverNum = nodeIdx + 1;
+          const fileId = 'file_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+          const startTime = Date.now();
+
+          try {
+            for (let i = 0; i < totalChunks; i++) {
+              const chunkStr = b64.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+              const res = await fetch(baseUrl + '/r_edu_files/' + channelKey + '/' + fileId + '/chunks/' + i + '.json', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(chunkStr)
+              });
+              if (!res.ok) throw new Error('Firebase server ' + serverNum + ' chunk upload failed (' + res.status + ')');
+
+              if (typeof onProgress === 'function') {
+                const doneRatio = (i + 1) / totalChunks;
+                const pct = Math.min(95, Math.max(5, Math.round(doneRatio * 94)));
+                const elapsedSec = Math.max(0.2, (Date.now() - startTime) / 1000);
+                const estTotalSec = elapsedSec / doneRatio;
+                const remSec = Math.max(1, estTotalSec - elapsedSec);
+                onProgress(pct, remSec, 'Uploading to Cloud Server ' + serverNum + ' (' + (i + 1) + '/' + totalChunks + ')...');
+              }
+            }
+
+            // Save file manifest
+            const metaRes = await fetch(baseUrl + '/r_edu_files/' + channelKey + '/' + fileId + '/meta.json', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(chunkStr)
+              body: JSON.stringify({ name: file.name, totalChunks: totalChunks, size: bytes.byteLength, server: serverNum, ts: Date.now() })
             });
-            if (!res.ok) throw new Error('Firebase chunk upload failed');
+            if (!metaRes.ok) throw new Error('Firebase server ' + serverNum + ' meta save failed');
 
-            if (typeof onProgress === 'function') {
-              const doneRatio = (i + 1) / totalChunks;
-              const pct = Math.min(95, Math.max(5, Math.round(doneRatio * 94)));
-              const elapsedSec = Math.max(0.2, (Date.now() - startTime) / 1000);
-              const estTotalSec = elapsedSec / doneRatio;
-              const remSec = Math.max(1, estTotalSec - elapsedSec);
-              onProgress(pct, remSec, 'Uploading to R. Education Cloud (' + (i + 1) + '/' + totalChunks + ')...');
-            }
+            try {
+              localStorage.setItem('r_edu_storage_node_idx', String((nodeIdx + 1) % pool.length));
+            } catch (e) {}
+
+            return {
+              remoteUrl: baseUrl + '/r_edu_files/' + channelKey + '/' + fileId + '.json?firebase_chunks=' + totalChunks
+            };
+          } catch (e) {
+            lastErr = e;
+            console.warn('Cloud Server ' + serverNum + ' failed, trying next server...', e);
+            // Clean up any partial chunks on the failed node
+            try {
+              fetch(baseUrl + '/r_edu_files/' + channelKey + '/' + fileId + '.json', { method: 'DELETE' }).catch(function () {});
+            } catch (ignore) {}
           }
-
-          // Save file manifest
-          await fetch(baseUrl + '/r_edu_files/' + channelKey + '/' + fileId + '/meta.json', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: file.name, totalChunks: totalChunks, size: bytes.byteLength, ts: Date.now() })
-          });
-
-          return {
-            remoteUrl: baseUrl + '/r_edu_files/' + channelKey + '/' + fileId + '.json?firebase_chunks=' + totalChunks
-          };
-        } catch (e) {
-          console.error('Firebase upload error:', e);
-          throw e;
         }
+
+        console.error('All Firebase storage servers failed:', lastErr);
+        throw lastErr || new Error('Cloud upload failed');
       }
 
       // Download chunked or single-blob PDF from Firebase Realtime Database
@@ -2815,13 +2851,13 @@
       const pdfFileInput = document.getElementById('pdfFileInput');
       const dropZone = document.getElementById('dropZone');
 
-      const MAX_DIRECT_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB direct upload limit
+      const MAX_DIRECT_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB direct upload limit
 
       function showFiveMbLimitPopup(fileSizeBytes) {
         const msgEl = document.getElementById('fileSizeLimitMsg');
         if (msgEl) {
           msgEl.innerHTML =
-            'Selected file is <strong>' + escapeHtml(formatSize(fileSizeBytes)) + '</strong>. Direct upload is limited to <strong>5 MB</strong> to save cloud storage. Please upload PDFs over 5 MB to <strong>Google Drive</strong> (enable "Anyone with the link") and paste the link in the <strong>Google Drive Link</strong> field.';
+            'Selected file is <strong>' + escapeHtml(formatSize(fileSizeBytes)) + '</strong>. Direct upload is limited to <strong>10 MB</strong> to save cloud storage. Please upload PDFs over 10 MB to <strong>Google Drive</strong> (enable "Anyone with the link") and paste the link in the <strong>Google Drive Link</strong> field.';
         }
         document.getElementById('fileSizeLimitModal').classList.remove('hidden');
       }
