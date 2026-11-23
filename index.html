@@ -2057,21 +2057,25 @@
               await savePdfBytes(pdf.id, bytes);
             }
           } catch (e) {
-            // If direct CORS fetch is blocked (e.g. Google Drive view link), show embedded online preview
+            // If direct CORS fetch is blocked (e.g. Google Drive link), use no-login Google Drive embed + direct download
             loading.classList.add('hidden');
             fallback.classList.remove('hidden');
             let embedUrl = pdf.remoteUrl;
-            const driveMatch = embedUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            let directOpenUrl = pdf.remoteUrl;
+            const driveMatch = embedUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || embedUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
             if (driveMatch && driveMatch[1]) {
-              embedUrl = 'https://drive.google.com/file/d/' + driveMatch[1] + '/preview';
+              const fid = driveMatch[1];
+              embedUrl = 'https://drive.google.com/file/d/' + fid + '/preview?usp=sharing';
+              directOpenUrl = 'https://drive.google.com/uc?export=download&id=' + fid;
             }
             fallback.innerHTML =
-              '<div class="space-y-3">' +
-                '<div class="flex items-center justify-between gap-2">' +
-                  '<h4 class="text-base font-bold text-slate-900 truncate">' + escapeHtml(pdf.title) + '</h4>' +
-                  '<a href="' + escapeHtml(pdf.remoteUrl) + '" target="_blank" rel="noopener noreferrer" class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-semibold">Open Full Screen</a>' +
+              '<div class="space-y-2.5">' +
+                '<div class="flex items-center justify-between gap-2 flex-wrap">' +
+                  '<h4 class="text-sm sm:text-base font-bold text-slate-900 truncate">' + escapeHtml(pdf.title) + '</h4>' +
+                  '<a href="' + escapeHtml(directOpenUrl) + '" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shrink-0">Open in Browser / Drive</a>' +
                 '</div>' +
-                '<iframe src="' + escapeHtml(embedUrl) + '" class="w-full h-[75vh] rounded-lg border border-slate-200" allow="autoplay"></iframe>' +
+                '<iframe src="' + escapeHtml(embedUrl) + '" class="w-full h-[75vh] rounded-lg border border-slate-200 bg-white" allow="autoplay"></iframe>' +
+                '<p class="text-[11px] text-slate-500 text-center">No sign-in needed when shared as &ldquo;Anyone with the link&rdquo; on Google Drive.</p>' +
               '</div>';
             return;
           } finally {
@@ -3363,7 +3367,10 @@
             bytes = await downloadPdfFromRemoteUrl(pdf.remoteUrl);
             if (bytes) await savePdfBytes(pdf.id, bytes);
           } catch (err) {
-            window.open(pdf.remoteUrl, '_blank', 'noopener,noreferrer');
+            let dlUrl = pdf.remoteUrl;
+            const dm = dlUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || dlUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (dm && dm[1]) dlUrl = 'https://drive.google.com/uc?export=download&id=' + dm[1];
+            window.open(dlUrl, '_blank', 'noopener,noreferrer');
             return;
           }
         }
