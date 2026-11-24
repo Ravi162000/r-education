@@ -90,6 +90,82 @@
       background-color: #1e293b !important;
       border-color: #334155 !important;
     }
+    body.dark-mode #personalOfflineBanner {
+      background-color: #064e3b !important;
+      border-color: #047857 !important;
+    }
+    body.dark-mode #personalOfflineBanner h3 {
+      color: #ecfdf5 !important;
+    }
+    body.dark-mode #personalOfflineBanner p {
+      color: #a7f3d0 !important;
+    }
+    body.dark-mode #studentModeTabs {
+      background-color: #1e293b !important;
+      border-color: #334155 !important;
+    }
+    /* Nebo-Style PDF Reader Theme Surfaces (100% Solid, Zero Transparency) */
+    #pdfReaderModal {
+      background-color: #e8eaed !important;
+    }
+    #pdfReaderModal #readerScrollArea {
+      background-color: #e8eaed !important;
+    }
+    #pdfReaderModal.nebo-warm,
+    #pdfReaderModal.nebo-warm #readerScrollArea {
+      background-color: #e5dcc8 !important;
+    }
+    #pdfReaderModal.nebo-night,
+    #pdfReaderModal.nebo-night #readerScrollArea {
+      background-color: #121417 !important;
+    }
+    #pdfReaderModal.nebo-night #readerTopBar,
+    #pdfReaderModal.nebo-night #readerBottomBar {
+      background-color: #1b1e23 !important;
+      border-color: #2d323b !important;
+      color: #f1f5f9 !important;
+    }
+    #pdfReaderModal.nebo-night #annotationToolbar {
+      background-color: #16191d !important;
+      border-color: #2d323b !important;
+      color: #e2e8f0 !important;
+    }
+    #pdfReaderModal.nebo-night #neboPageDrawer {
+      background-color: #1b1e23 !important;
+      border-color: #2d323b !important;
+      color: #f1f5f9 !important;
+    }
+    #pdfReaderModal.nebo-night #readerTitle,
+    #pdfReaderModal.nebo-night #pageIndicator {
+      color: #f8fafc !important;
+    }
+    #pdfReaderModal.nebo-night #readerTopBar .bg-slate-100,
+    #pdfReaderModal.nebo-night #annotationToolbar .bg-white,
+    #pdfReaderModal.nebo-night #annotationToolbar .bg-slate-100,
+    #pdfReaderModal.nebo-night #readerBottomBar .bg-slate-100 {
+      background-color: #262b33 !important;
+      border-color: #3a414d !important;
+      color: #f1f5f9 !important;
+    }
+    #pdfReaderModal.nebo-night #readerTopBar button:not(.bg-blue-600),
+    #pdfReaderModal.nebo-night #annotationToolbar button:not(.bg-blue-600):not(.text-rose-600),
+    #pdfReaderModal.nebo-night #readerBottomBar button:not(.bg-blue-600) {
+      color: #e2e8f0 !important;
+    }
+    #pdfReaderModal.nebo-night #readerTopBar #zoomLabel,
+    #pdfReaderModal.nebo-night #readerBottomBar #jumpPageInput {
+      color: #f8fafc !important;
+    }
+    #pdfReaderModal.nebo-night #readerMeta {
+      color: #94a3b8 !important;
+    }
+    #pdfReaderModal.nebo-night #readerFallback {
+      background-color: #121417 !important;
+    }
+    #pdfReaderModal .pdf-page-slot {
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.14) !important;
+      border-radius: 6px !important;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -325,6 +401,20 @@
       </div>
     </section>
 
+    <!-- Student Mode View Switcher (Online Notes vs Personal Offline PDF Organizer) -->
+    <section id="studentModeTabs" class="bg-white rounded-2xl border border-slate-200 p-1.5 shadow-sm flex items-center gap-1.5">
+      <button id="tabOnlineLibrary" type="button" class="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-sm">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        <span>Online Notes</span>
+      </button>
+      <button id="tabPersonalOffline" type="button" class="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-100">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+        <span>My Offline PDFs</span>
+        <span id="tabPersonalCountBadge" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">0</span>
+      </button>
+    </section>
+
+    <div id="onlineLibrarySection" class="space-y-6">
     <!-- Subject Cards -->
     <section class="space-y-3">
       <div class="flex items-center justify-between gap-2">
@@ -373,6 +463,85 @@
         <p class="text-xs text-slate-500">Try clearing your search or selecting another subject.</p>
       </div>
     </section>
+    </div>
+
+    <!-- Personal Offline PDF Organizer (100% Phone Storage, Zero Server/Cloud Storage) -->
+    <div id="personalOfflineSection" class="hidden space-y-6 animate-fade-in">
+      <!-- Personal Organizer Header Card -->
+      <section id="personalOfflineBanner" class="rounded-2xl bg-emerald-50 border border-emerald-200 p-4 sm:p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="text-sm sm:text-base font-bold text-emerald-950">My Personal Offline PDF Organizer</h3>
+                <span class="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-600 text-white">100% Offline &bull; Phone Storage Only</span>
+              </div>
+              <p class="text-xs sm:text-sm text-emerald-900/80 mt-0.5">Add your own PDFs subject-wise and read them right here anytime without internet. All files stay strictly on your phone storage &mdash; never uploaded to any server.</p>
+              <div class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/80 border border-emerald-200 text-[11px] font-semibold text-emerald-800">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+                <span id="personalStorageBadge">0 PDFs &bull; 0 KB on Phone</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <button id="btnPersonalAddPdf" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              Add PDF from Phone
+            </button>
+            <button id="btnPersonalAddSubject" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-emerald-100 text-emerald-700 border border-emerald-300 text-xs sm:text-sm font-semibold transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+              Add Subject
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Personal Subjects Grid -->
+      <section class="space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 class="text-sm sm:text-base font-bold text-slate-800">My Offline Subjects</h3>
+            <span class="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Tap pencil icon to Edit / Delete</span>
+          </div>
+          <button id="btnPersonalShowAllSubjects" type="button" class="text-xs font-semibold text-emerald-600 hover:text-emerald-800 transition">View All</button>
+        </div>
+        <div id="personalSubjectsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3"></div>
+      </section>
+
+      <!-- Personal Search Bar -->
+      <section class="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div class="relative flex-1">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/></svg>
+          <input id="personalSearchInput" type="text" placeholder="Search your personal offline PDFs by title or filename..." class="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm" />
+        </div>
+        <select id="personalSortOrder" class="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="newest">Newest First</option>
+          <option value="title">Title A-Z</option>
+        </select>
+      </section>
+
+      <!-- Personal Offline PDFs List -->
+      <section class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 id="personalLibraryHeading" class="text-sm sm:text-base font-bold text-slate-800">All My Offline PDFs</h3>
+          <span id="personalPdfCountLabel" class="text-xs font-medium text-slate-500">0 PDFs</span>
+        </div>
+        <div id="personalPdfGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="personalEmptyState" class="hidden bg-white rounded-2xl border border-dashed border-emerald-300 p-8 sm:p-10 text-center space-y-2.5">
+          <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <h4 class="text-sm font-bold text-slate-800">No personal offline PDFs here yet</h4>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto">Tap <strong>Add PDF from Phone</strong> to organize your own notes subject-wise and read them offline with pen, highlighter, and zoom.</p>
+          <button id="btnPersonalEmptyAdd" type="button" class="mt-1 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition">
+            + Add Your First Offline PDF
+          </button>
+        </div>
+      </section>
+    </div>
   </main>
 
   <!-- Footer -->
@@ -728,131 +897,162 @@
     </div>
   </div>
 
-  <!-- In-App Read-Only PDF Reader Modal -->
-  <div id="pdfReaderModal" class="hidden fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-sm flex flex-col">
+  <!-- Nebo-Style Smooth PDF Reader Modal (Unified for Online, Google Drive & Offline PDFs) -->
+  <div id="pdfReaderModal" class="hidden fixed inset-0 z-50 bg-[#e8eaed] flex flex-col">
     <!-- Floating Exit Full Screen Button (Visible only in Full Screen Mode) -->
-    <button id="btnExitFullscreen" type="button" class="hidden fixed top-3 right-3 z-50 px-3 py-1.5 rounded-full bg-slate-900/85 hover:bg-slate-800 text-white text-xs font-bold border border-slate-600 shadow-lg backdrop-blur flex items-center gap-1.5">
+    <button id="btnExitFullscreen" type="button" class="hidden fixed top-3 right-3 z-50 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold border border-slate-700 shadow-lg flex items-center gap-1.5">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25"/></svg>
       <span>Exit Full Screen</span>
     </button>
 
-    <!-- Reader Toolbar -->
-    <div id="readerTopBar" class="bg-slate-900 text-white border-b border-slate-800 px-3 sm:px-5 py-3 flex items-center justify-between gap-3">
-      <div class="min-w-0">
-        <div class="flex items-center gap-2">
-          <span id="readerSubjectBadge" class="px-2 py-0.5 rounded bg-indigo-600 text-[11px] font-semibold shrink-0">Subject</span>
-          <h3 id="readerTitle" class="text-sm sm:text-base font-bold truncate">Document Title</h3>
+    <!-- Nebo Clean Header Bar (Solid White, Crisp Borders, Zero Transparency) -->
+    <div id="readerTopBar" class="bg-white text-slate-800 border-b border-slate-200 px-2.5 sm:px-4 py-2 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <button id="closeReaderModal" type="button" title="Back to Library" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button id="btnNeboPageDrawer" type="button" title="Page Grid Navigator" class="p-2 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 transition shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        </button>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span id="readerSubjectBadge" class="px-2 py-0.5 rounded-md bg-blue-600 text-white text-[10px] font-bold shrink-0">Subject</span>
+            <h3 id="readerTitle" class="text-xs sm:text-sm font-bold text-slate-900 truncate">Document Title</h3>
+          </div>
+          <p id="readerMeta" class="text-[10px] text-slate-500 truncate">Nebo Reader &bull; R. Education</p>
         </div>
-        <p id="readerMeta" class="text-[11px] text-slate-400 truncate">Read-Only Mode &bull; R. Education</p>
       </div>
 
       <div class="flex items-center gap-1.5 shrink-0">
-        <!-- Always-Visible Mobile + Desktop Zoom Controls -->
-        <div class="flex items-center bg-slate-800 rounded-lg p-0.5 border border-slate-700">
-          <button id="btnZoomOut" type="button" class="px-2 py-1 text-xs font-bold hover:bg-slate-700 rounded" title="Zoom Out">&minus;</button>
-          <button id="btnZoomFit" type="button" class="px-1.5 py-1 text-[11px] font-semibold text-slate-200 hover:bg-slate-700 rounded" title="Reset Fit Width"><span id="zoomLabel">100%</span></button>
-          <button id="btnZoomIn" type="button" class="px-2 py-1 text-xs font-bold hover:bg-slate-700 rounded" title="Zoom In">+</button>
+        <!-- Nebo Compact Zoom Pill -->
+        <div class="flex items-center bg-slate-100 rounded-xl p-0.5 border border-slate-200">
+          <button id="btnZoomOut" type="button" class="px-2 py-1 text-xs font-bold text-slate-700 hover:bg-white rounded-lg transition" title="Zoom Out">&minus;</button>
+          <button id="btnZoomFit" type="button" class="px-1.5 py-1 text-[11px] font-bold text-slate-800 hover:bg-white rounded-lg transition" title="Fit Width"><span id="zoomLabel">100%</span></button>
+          <button id="btnZoomIn" type="button" class="px-2 py-1 text-xs font-bold text-slate-700 hover:bg-white rounded-lg transition" title="Zoom In">+</button>
         </div>
 
         <!-- Eye-Comfort Reading Theme (Day / Warm / Night) -->
-        <button id="btnReaderTheme" type="button" title="Toggle Reading Mode (Day / Warm / Night)" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-semibold border border-slate-700">
+        <button id="btnReaderTheme" type="button" title="Reading Theme (Day / Warm / Night)" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold border border-slate-200 transition">
           Day
         </button>
 
         <!-- Full Screen Toggle Button -->
-        <button id="btnReaderFullscreen" type="button" title="Full Screen Reading Mode" class="p-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-200 hover:text-white border border-slate-700 transition">
+        <button id="btnReaderFullscreen" type="button" title="Full Screen Mode" class="p-2 rounded-xl bg-slate-100 hover:bg-blue-600 text-slate-700 hover:text-white border border-slate-200 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
-        </button>
-
-        <button id="closeReaderModal" type="button" class="px-2.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold">
-          Close
         </button>
       </div>
     </div>
 
-    <!-- Pen / Highlighter / Eraser & Color Palette Toolbar (Like Tablet PDF Annotator) -->
-    <div id="annotationToolbar" class="bg-slate-950/95 border-b border-slate-800 px-3 sm:px-5 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar">
-      <!-- Tool Mode Buttons -->
-      <div class="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 shrink-0">
-        <button id="toolHand" type="button" title="Scroll / Hand Mode" class="p-2 rounded-lg bg-indigo-600 text-white transition flex items-center gap-1 text-xs font-semibold">
+    <!-- Nebo Signature Minimalist Tool Strip (Hand, Pen, Highlighter, Eraser, Text Note, Undo/Redo, Colors) -->
+    <div id="annotationToolbar" class="bg-[#f8f9fa] border-b border-slate-200 px-2.5 sm:px-4 py-1.5 flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <!-- Nebo Core Tool Pill -->
+      <div class="flex items-center gap-1 bg-white p-1 rounded-full border border-slate-200 shadow-sm shrink-0">
+        <button id="toolHand" type="button" title="Scroll / Pan (Double-tap page to zoom)" class="px-2.5 py-1.5 rounded-full bg-blue-600 text-white transition flex items-center gap-1 text-xs font-semibold">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"/></svg>
           <span class="hidden sm:inline">Scroll</span>
         </button>
-        <button id="toolPen" type="button" title="Pen Tool" class="p-2 rounded-lg text-slate-300 hover:bg-slate-800 transition flex items-center gap-1 text-xs font-semibold">
+        <button id="toolPen" type="button" title="Nebo Smooth Pen" class="px-2.5 py-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition flex items-center gap-1 text-xs font-semibold">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
           <span class="hidden sm:inline">Pen</span>
         </button>
-        <button id="toolHighlighter" type="button" title="Highlighter / Pencil" class="p-2 rounded-lg text-slate-300 hover:bg-slate-800 transition flex items-center gap-1 text-xs font-semibold">
+        <button id="toolHighlighter" type="button" title="Nebo Highlighter" class="px-2.5 py-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition flex items-center gap-1 text-xs font-semibold">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
           <span class="hidden sm:inline">Marker</span>
         </button>
-        <button id="toolEraser" type="button" title="Eraser Tool" class="p-2 rounded-lg text-slate-300 hover:bg-slate-800 transition flex items-center gap-1 text-xs font-semibold">
+        <button id="toolEraser" type="button" title="Nebo Eraser" class="px-2.5 py-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition flex items-center gap-1 text-xs font-semibold">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7-5-5 8-8a2.828 2.828 0 114 4l-3 3m-4 4l-4-4m9 4h4"/></svg>
           <span class="hidden sm:inline">Eraser</span>
         </button>
+        <button id="toolTextNote" type="button" title="Add Typed Text Note on Page" class="px-2.5 py-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition flex items-center gap-1 text-xs font-bold">
+          <span class="text-sm leading-none font-serif font-extrabold">T</span>
+          <span class="hidden sm:inline">Text</span>
+        </button>
       </div>
 
-      <!-- Undo / Clear / Style & Size Popover Trigger -->
-      <div class="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 shrink-0">
-        <button id="btnToolSettings" type="button" title="Tool Style &amp; Thickness (Felt / Fountain / Brush)" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-semibold transition flex items-center gap-1.5 border border-slate-700">
-          <span id="toolSizeIndicatorDot" class="inline-block w-2.5 h-2.5 rounded-full bg-white"></span>
+      <!-- Style & Thickness + Undo / Redo / Clear -->
+      <div class="flex items-center gap-1 bg-white p-1 rounded-full border border-slate-200 shadow-sm shrink-0">
+        <button id="btnToolSettings" type="button" title="Stroke Style &amp; Thickness" class="px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
+          <span id="toolSizeIndicatorDot" class="inline-block w-2.5 h-2.5 rounded-full bg-blue-600"></span>
           <span id="toolStyleBadge">Style &amp; Size</span>
         </button>
-        <button id="btnAnnoUndo" type="button" title="Undo Last Stroke" class="px-2 py-1.5 rounded-lg text-slate-300 hover:bg-slate-800 text-xs font-semibold transition">Undo</button>
-        <button id="btnAnnoClear" type="button" title="Clear Page Markings" class="px-2 py-1.5 rounded-lg text-rose-300 hover:bg-rose-950/60 text-xs font-semibold transition">Clear</button>
+        <button id="btnAnnoUndo" type="button" title="Undo" class="px-2 py-1.5 rounded-full text-slate-600 hover:bg-slate-100 text-xs font-semibold transition flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>
+          <span class="hidden sm:inline">Undo</span>
+        </button>
+        <button id="btnAnnoRedo" type="button" title="Redo" class="p-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3"/></svg>
+        </button>
+        <button id="btnAnnoClear" type="button" title="Clear Page Markings" class="px-2 py-1 rounded-full text-rose-600 hover:bg-rose-50 text-xs font-bold transition">Clear</button>
       </div>
 
-      <div class="h-6 w-px bg-slate-700 shrink-0"></div>
+      <div class="h-5 w-px bg-slate-300 shrink-0"></div>
 
-      <!-- Color Swatches Row (Matching Uploaded Photo) -->
+      <!-- Color Swatches Row -->
       <div id="colorSwatches" class="flex items-center gap-1.5 shrink-0"></div>
     </div>
 
-    <!-- Floating Tablet-Style Pen / Marker / Eraser Popover (Matches Photo: 3 Styles + 6 Size Dots + Preview Pad) -->
-    <div id="toolSettingsPopover" class="hidden fixed top-28 left-3 sm:left-6 z-50 w-72 sm:w-80 rounded-2xl bg-[#1c1c1e] text-white border border-slate-700 shadow-2xl p-4 space-y-4 animate-fade-in">
+    <!-- Floating Nebo-Style Pen / Marker / Eraser Popover -->
+    <div id="toolSettingsPopover" class="hidden fixed top-28 left-3 sm:left-6 z-50 w-72 sm:w-80 rounded-2xl bg-white text-slate-900 border border-slate-200 shadow-2xl p-4 space-y-4 animate-fade-in">
       <div class="flex items-center justify-between">
-        <span id="popoverToolTitle" class="text-sm font-bold text-slate-100 tracking-wide">Pen</span>
-        <button id="closeToolSettingsPopover" type="button" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition" title="Close">
+        <span id="popoverToolTitle" class="text-sm font-bold text-slate-900 tracking-wide">Pen</span>
+        <button id="closeToolSettingsPopover" type="button" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Close">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-
-      <!-- 3 Style Cards (e.g. Felt / Fountain / Brush) -->
       <div id="popoverStyleGrid" class="grid grid-cols-3 gap-2"></div>
-
-      <!-- 6 Visual Size Dots (Tiny to Thick, saved per tool) -->
-      <div id="popoverSizeDots" class="flex items-center justify-between px-1 py-1"></div>
-
-      <!-- Interactive Stroke Preview Pad (Shows exact style + thickness + color) -->
-      <div class="rounded-xl bg-[#e5e7eb] overflow-hidden border border-slate-600 relative">
+      <div id="popoverSizeDots" class="flex items-center justify-between px-1 py-1 bg-slate-900 rounded-xl"></div>
+      <div class="rounded-xl bg-[#f1f5f9] overflow-hidden border border-slate-200 relative">
         <canvas id="toolPreviewCanvas" width="280" height="104" class="w-full h-24 block cursor-crosshair"></canvas>
-        <span class="absolute bottom-1 right-2 text-[10px] font-medium text-slate-500 pointer-events-none">Preview / Test here</span>
+        <span class="absolute bottom-1 right-2 text-[10px] font-medium text-slate-500 pointer-events-none">Test stroke here</span>
       </div>
     </div>
 
-    <!-- Reader Viewport (Page-Only Zoom Container: toolbars stay fixed, only PDF page zooms & pans smoothly) -->
-    <div id="readerScrollArea" class="flex-1 overflow-auto p-3 sm:p-6 text-center" style="-webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;">
-      <div id="readerLoading" class="hidden text-slate-300 text-sm py-12 text-center">Loading HD PDF page...</div>
+    <!-- Nebo Slide-Out Page Navigator Drawer -->
+    <div id="neboPageDrawer" class="hidden fixed top-24 bottom-14 left-0 z-40 w-64 sm:w-72 bg-white border-r border-slate-200 shadow-2xl flex flex-col animate-fade-in">
+      <div class="px-3.5 py-2.5 border-b border-slate-200 flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Pages Navigator</span>
+        <button id="closeNeboPageDrawer" type="button" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="neboPageGrid" class="flex-1 overflow-y-auto p-3 grid grid-cols-3 gap-2 content-start"></div>
+    </div>
+
+    <!-- Nebo Typed Text Note Input Popup -->
+    <div id="neboTextModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl max-w-xs w-full p-4 shadow-2xl space-y-3 border border-slate-200">
+        <h4 class="text-sm font-bold text-slate-900">Add Text Note on Page</h4>
+        <textarea id="neboTextInput" rows="3" placeholder="Type your formula or short note..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        <div class="flex items-center justify-end gap-2">
+          <button id="cancelNeboTextBtn" type="button" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 text-xs font-semibold">Cancel</button>
+          <button id="saveNeboTextBtn" type="button" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">Place Note</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nebo Clean Paper-Desk Viewport (Solid Background, Zero Transparency) -->
+    <div id="readerScrollArea" class="flex-1 overflow-auto p-2.5 sm:p-5 text-center bg-[#e8eaed]" style="-webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; contain: layout style;">
+      <div id="readerLoading" class="hidden text-slate-600 text-sm font-semibold py-12 text-center">Loading PDF pages...</div>
       <div id="pdfCanvasWrapper" class="relative inline-block hidden text-left align-top">
-        <div id="pdfPagesStack" class="flex flex-col items-center gap-3"></div>
+        <div id="pdfPagesStack" class="flex flex-col items-center gap-3.5"></div>
         <canvas id="pdfCanvas" class="hidden"></canvas>
         <canvas id="annotationCanvas" class="hidden"></canvas>
       </div>
-      <div id="readerFallback" class="hidden bg-white text-slate-800 max-w-2xl w-full mx-auto rounded-xl p-6 sm:p-8 shadow-2xl space-y-4 text-left"></div>
+      <div id="readerFallback" class="hidden bg-white text-slate-800 max-w-4xl w-full mx-auto rounded-xl p-4 shadow-xl space-y-3 text-left"></div>
     </div>
 
-    <!-- Bottom Interactive Page Slider & Thumb Navigation Bar -->
-    <div id="readerBottomBar" class="bg-slate-900 text-white border-t border-slate-800 px-3 sm:px-5 py-2.5 flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+    <!-- Nebo Minimalist Bottom Page Scrubber Bar -->
+    <div id="readerBottomBar" class="bg-white text-slate-700 border-t border-slate-200 px-3 sm:px-5 py-2 flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
       <div class="w-full sm:flex-1 flex items-center gap-2.5">
-        <button id="btnPrevPage" type="button" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 border border-slate-700 text-xs font-bold disabled:opacity-40 transition shrink-0" title="Previous Page">&larr; Prev</button>
-        <input id="pageRangeSlider" type="range" min="1" max="1" value="1" class="flex-1 accent-indigo-500 cursor-pointer h-2 bg-slate-700 rounded-lg" aria-label="Slide to Page" />
-        <button id="btnNextPage" type="button" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 border border-slate-700 text-xs font-bold disabled:opacity-40 transition shrink-0" title="Next Page">Next &rarr;</button>
+        <button id="btnPrevPage" type="button" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-600 hover:text-white border border-slate-200 text-xs font-bold disabled:opacity-40 transition shrink-0" title="Previous Page">&larr; Prev</button>
+        <input id="pageRangeSlider" type="range" min="1" max="1" value="1" class="flex-1 accent-blue-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg" aria-label="Slide to Page" />
+        <button id="btnNextPage" type="button" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-600 hover:text-white border border-slate-200 text-xs font-bold disabled:opacity-40 transition shrink-0" title="Next Page">Next &rarr;</button>
       </div>
       <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto shrink-0">
-        <span id="pageIndicator" class="text-xs font-semibold text-indigo-300 whitespace-nowrap">Page 1 / 1</span>
+        <span id="pageIndicator" class="text-xs font-bold text-blue-600 whitespace-nowrap">Page 1 / 1</span>
         <div class="flex items-center gap-1">
-          <input id="jumpPageInput" type="number" min="1" max="1" placeholder="Pg" class="w-14 px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white text-center focus:outline-none focus:ring-1 focus:ring-indigo-500" />
-          <button id="btnJumpPage" type="button" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-xs font-semibold text-white">Go</button>
+          <input id="jumpPageInput" type="number" min="1" max="1" placeholder="Pg" class="w-14 px-2 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs text-slate-800 text-center focus:outline-none focus:ring-1 focus:ring-blue-500" />
+          <button id="btnJumpPage" type="button" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-xs font-semibold text-white">Go</button>
         </div>
       </div>
     </div>
@@ -1036,6 +1236,102 @@
       <button id="btnCloseSizeLimitModal" type="button" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-sm transition">
         Use Google Drive Link
       </button>
+    </div>
+  </div>
+
+  <!-- Personal Offline Add PDF Modal (100% Phone Storage) -->
+  <div id="personalUploadModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-xl space-y-4 my-auto animate-fade-in">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold text-slate-900">Add Personal Offline PDF</h3>
+          <p class="text-[11px] text-emerald-700 font-semibold">Saved only on your phone storage &bull; 100% Private &amp; Offline</p>
+        </div>
+        <button id="closePersonalUploadModal" type="button" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="personalUploadForm" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Select Subject *</label>
+          <select id="personalPdfSubjectInput" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">PDF Title <span class="font-normal text-slate-400">(optional &mdash; auto-uses file name)</span></label>
+          <input id="personalPdfTitleInput" type="text" placeholder="e.g. Haryana GK Handwritten Notes" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Choose PDF File(s) from Phone *</label>
+          <div id="personalDropZone" class="relative border-2 border-dashed border-emerald-300 hover:border-emerald-500 rounded-xl p-4 text-center bg-emerald-50/40 hover:bg-emerald-50 transition cursor-pointer">
+            <input id="personalPdfFileInput" type="file" accept=".pdf,application/pdf" multiple required class="absolute inset-0 opacity-0 cursor-pointer" />
+            <svg class="w-7 h-7 text-emerald-600 mx-auto mb-1" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            <p id="personalSelectedFileLabel" class="text-xs font-semibold text-slate-700">Tap to pick 1 or more PDFs from phone</p>
+            <p class="text-[11px] text-emerald-700 mt-0.5">No server upload &bull; No 10 MB cloud limit</p>
+          </div>
+        </div>
+        <div id="personalUploadStatus" class="hidden text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-center">Saving to your phone storage...</div>
+        <div class="flex items-center justify-end gap-2 pt-1">
+          <button id="cancelPersonalUploadBtn" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs sm:text-sm font-semibold hover:bg-slate-50">Cancel</button>
+          <button id="submitPersonalUploadBtn" type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-sm transition">Save Offline</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Personal Offline Add / Edit Subject Modal -->
+  <div id="personalSubjectModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-xl space-y-4 animate-fade-in">
+      <div class="flex items-center justify-between">
+        <h3 id="personalSubjectModalTitle" class="text-base sm:text-lg font-bold text-slate-900">Add Offline Subject</h3>
+        <button id="closePersonalSubjectModal" type="button" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="personalSubjectForm" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Subject Name *</label>
+          <input id="personalSubjectNameInput" type="text" required placeholder="e.g. Haryana GK, Science, History" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Short Note <span class="font-normal text-slate-400">(optional)</span></label>
+          <input id="personalSubjectTaglineInput" type="text" placeholder="e.g. My Saved Notes" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Card Color</label>
+          <select id="personalSubjectColorInput" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <option value="emerald">Emerald Green</option>
+            <option value="indigo">Indigo Blue</option>
+            <option value="sky">Sky Blue</option>
+            <option value="amber">Amber Gold</option>
+            <option value="violet">Violet Purple</option>
+            <option value="rose">Rose Pink</option>
+          </select>
+        </div>
+        <div class="flex items-center justify-between gap-2 pt-1">
+          <button id="btnDeletePersonalSubject" type="button" class="hidden px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold transition">Delete Subject</button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button id="cancelPersonalSubjectBtn" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs sm:text-sm font-semibold hover:bg-slate-50">Cancel</button>
+            <button id="savePersonalSubjectBtn" type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-sm transition">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Personal Offline Delete Confirmation Modal (Yes / No) -->
+  <div id="personalDeleteModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xs w-full p-5 shadow-xl space-y-4 animate-fade-in text-center">
+      <div class="w-11 h-11 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+      </div>
+      <div class="space-y-1">
+        <h4 id="personalDeleteTitle" class="text-base font-bold text-slate-900">Remove Offline PDF?</h4>
+        <p id="personalDeleteDesc" class="text-xs text-slate-600 leading-relaxed">This will remove the PDF from your personal organizer and free up phone storage.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="cancelPersonalDeleteBtn" type="button" class="flex-1 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold transition">No</button>
+        <button id="confirmPersonalDeleteBtn" type="button" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm transition">Yes, Delete</button>
+      </div>
     </div>
   </div>
 
@@ -1804,6 +2100,9 @@
           adminPanel.classList.remove('hidden');
           const subjHint = document.getElementById('adminSubjectHint');
           if (subjHint) subjHint.classList.remove('hidden');
+          const stTabs = document.getElementById('studentModeTabs');
+          if (stTabs) stTabs.classList.add('hidden');
+          if (typeof setStudentViewTab === 'function') setStudentViewTab('online');
           statAccess.textContent = 'Full';
           statAccess.className = 'text-lg sm:text-xl font-bold text-amber-300';
           footerAccessNote.textContent = 'Admin mode active: You can upload, manage, and delete PDFs.';
@@ -1824,6 +2123,8 @@
           adminPanel.classList.add('hidden');
           const subjHint = document.getElementById('adminSubjectHint');
           if (subjHint) subjHint.classList.add('hidden');
+          const stTabs = document.getElementById('studentModeTabs');
+          if (stTabs) stTabs.classList.remove('hidden');
           statAccess.textContent = 'Read';
           statAccess.className = 'text-lg sm:text-xl font-bold text-emerald-300';
           footerAccessNote.textContent = 'Read-only mode active for students. Admin login required for uploads.';
@@ -2052,11 +2353,14 @@
         const canvas = document.getElementById('pdfCanvas');
         const fallback = document.getElementById('readerFallback');
         const loading = document.getElementById('readerLoading');
-        const subj = state.subjects.find(function (s) { return s.id === pdf.subjectId; }) || { name: 'Study Material' };
+        const subjPool = (pdf.isPersonal && typeof personalState !== 'undefined') ? personalState.subjects : state.subjects;
+        const subj = subjPool.find(function (s) { return s.id === pdf.subjectId; }) || { name: pdf.isPersonal ? 'My Offline PDF' : 'Study Material' };
 
         document.getElementById('readerSubjectBadge').textContent = subj.name;
         document.getElementById('readerTitle').textContent = pdf.title;
-        document.getElementById('readerMeta').textContent = (pdf.exam || 'General') + ' • Read-Only Mode • R. Education';
+        document.getElementById('readerMeta').textContent = pdf.isPersonal
+          ? 'Personal Offline PDF • Saved on Phone • R. Education'
+          : ((pdf.exam || 'General') + ' • Read-Only Mode • R. Education');
 
         const wrapper = document.getElementById('pdfCanvasWrapper');
         modal.classList.remove('hidden');
@@ -2081,33 +2385,53 @@
         readerState.scale = 1.0;
         updateZoomLabel();
 
-        let bytes = await loadPdfBytes(pdf.id);
+        let bytes = (pdf.isPersonal && typeof loadPersonalPdfBytes === 'function')
+          ? await loadPersonalPdfBytes(pdf.id)
+          : await loadPdfBytes(pdf.id);
         if (!bytes && pdf.inlineBase64) {
           try {
             bytes = base64ToUint8(pdf.inlineBase64);
             await savePdfBytes(pdf.id, bytes);
           } catch (e) {}
         }
-        // Direct Google Drive Link Detection (Render Drive Preview directly without fetching HTML page!)
+        // Helper to mount clean full-screen Google Drive PDF viewer (zero reminder box) with Pen / Marker / Eraser overlay
+        function mountGoogleDriveAnnotatableViewer(embedUrl, directDlUrl) {
+          const stackEl = document.getElementById('pdfPagesStack');
+          if (stackEl) stackEl.innerHTML = '';
+          loading.classList.add('hidden');
+          fallback.classList.remove('hidden');
+          fallback.className = 'w-full max-w-5xl mx-auto p-0 bg-transparent text-left';
+          fallback.innerHTML =
+            '<div id="driveAnnoWrap" class="relative w-full rounded-lg overflow-hidden bg-white shadow-md" style="height:calc(100vh - 156px);min-height:460px;">' +
+              '<iframe src="' + escapeHtml(embedUrl) + '" class="w-full h-full border-0 bg-white block" allow="autoplay; fullscreen" allowfullscreen></iframe>' +
+              '<canvas id="driveAnnoCanvas" class="anno-page-canvas absolute inset-0 w-full h-full z-10" data-anno-page="1"></canvas>' +
+            '</div>';
+
+          const driveCanvas = document.getElementById('driveAnnoCanvas');
+          const driveWrap = document.getElementById('driveAnnoWrap');
+          if (driveCanvas && driveWrap) {
+            const dpr = Math.min(window.devicePixelRatio || 1.5, 2);
+            const r = driveWrap.getBoundingClientRect();
+            const cw = Math.max(320, Math.floor((r.width || 600) * dpr));
+            const ch = Math.max(460, Math.floor((r.height || 700) * dpr));
+            driveCanvas.width = Math.min(cw, 1600);
+            driveCanvas.height = Math.min(ch, 2000);
+            bindAnnotationCanvasEvents(driveCanvas, 1);
+            updateAnnotationCanvasPointerMode();
+            redrawAnnotationsForPage(1, driveCanvas);
+          }
+          applyReaderThemeToPages();
+          updatePageHud(1);
+        }
+
+        // Direct Google Drive Link Detection (Render Drive Preview + Pen/Marker/Eraser Overlay directly!)
         if (!bytes && pdf.remoteUrl) {
           const gDriveMatch = pdf.remoteUrl.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?[^#]*id=)([a-zA-Z0-9_-]+)/);
           if (gDriveMatch && gDriveMatch[1]) {
             const fid = gDriveMatch[1];
             const embedUrl = 'https://drive.google.com/file/d/' + fid + '/preview';
             const directDlUrl = 'https://drive.google.com/uc?export=download&id=' + fid;
-            loading.classList.add('hidden');
-            fallback.classList.remove('hidden');
-            fallback.innerHTML =
-              '<div class="space-y-3">' +
-                '<div class="flex items-center justify-between gap-2 flex-wrap">' +
-                  '<h4 class="text-sm sm:text-base font-bold text-slate-900 truncate">' + escapeHtml(pdf.title) + '</h4>' +
-                  '<div class="flex items-center gap-1.5 shrink-0">' +
-                    '<a href="' + escapeHtml(directDlUrl) + '" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">Download</a>' +
-                    '<a href="' + escapeHtml(embedUrl) + '" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">Full View</a>' +
-                  '</div>' +
-                '</div>' +
-                '<iframe src="' + escapeHtml(embedUrl) + '" class="w-full h-[76vh] rounded-lg border border-slate-200 bg-white" allow="autoplay; fullscreen" allowfullscreen></iframe>' +
-              '</div>';
+            mountGoogleDriveAnnotatableViewer(embedUrl, directDlUrl);
             return;
           }
 
@@ -2272,7 +2596,44 @@
         return { cssW: cssW, cssH: cssH, availWidth: availWidth };
       }
 
+      let pageRenderQueue = [];
+      let isProcessingRenderQueue = false;
+
+      function enqueuePageRender(pageNum) {
+        if (!readerState.pdfDoc) return;
+        const targetScaleKey = readerState.scale.toFixed(2);
+        if (pageRenderedScale[pageNum] === targetScaleKey) return;
+        if (pageRenderQueue.indexOf(pageNum) === -1) {
+          pageRenderQueue.push(pageNum);
+        }
+        processPageRenderQueue();
+      }
+
+      async function processPageRenderQueue() {
+        if (isProcessingRenderQueue) return;
+        isProcessingRenderQueue = true;
+        try {
+          while (pageRenderQueue.length > 0 && readerState.pdfDoc) {
+            // Always prioritize the page closest to the user's current view
+            pageRenderQueue.sort(function (a, b) {
+              return Math.abs(a - readerState.currentPage) - Math.abs(b - readerState.currentPage);
+            });
+            const nextPage = pageRenderQueue.shift();
+            if (Math.abs(nextPage - readerState.currentPage) > 4) continue;
+            await renderSinglePageSlotDirect(nextPage);
+            // Yield one frame so scrolling & touch input stay 60fps smooth
+            await new Promise(function (r) { requestAnimationFrame(r); });
+          }
+        } finally {
+          isProcessingRenderQueue = false;
+        }
+      }
+
       async function renderSinglePageSlot(pageNum) {
+        enqueuePageRender(pageNum);
+      }
+
+      async function renderSinglePageSlotDirect(pageNum) {
         if (!readerState.pdfDoc) return;
         const stack = document.getElementById('pdfPagesStack');
         if (!stack) return;
@@ -2291,7 +2652,7 @@
           const page = await readerState.pdfDoc.getPage(pageNum);
           const unscaled = page.getViewport({ scale: 1 });
           const scrollArea = document.getElementById('readerScrollArea');
-          const availWidth = Math.max(300, (scrollArea ? scrollArea.clientWidth : window.innerWidth) - 24);
+          const availWidth = Math.max(300, (scrollArea ? scrollArea.clientWidth : window.innerWidth) - 20);
           const fitScale = availWidth / (unscaled.width || 600);
           const cssScale = fitScale * readerState.scale;
           const cssW = Math.floor(unscaled.width * cssScale);
@@ -2300,8 +2661,9 @@
           slot.style.width = cssW + 'px';
           slot.style.height = cssH + 'px';
 
-          const rawDpr = Math.min(Math.max(window.devicePixelRatio || 2, 2.5), 3.5);
-          const maxEdge = 4096;
+          // Balanced HD DPR (crisp text without 64MB mobile GPU lag)
+          const rawDpr = Math.min(Math.max(window.devicePixelRatio || 1.5, 1.5), 2.0);
+          const maxEdge = 2048;
           let renderScale = cssScale * rawDpr;
           if (unscaled.width * renderScale > maxEdge) renderScale = maxEdge / unscaled.width;
           if (unscaled.height * renderScale > maxEdge) renderScale = Math.min(renderScale, maxEdge / unscaled.height);
@@ -2317,8 +2679,6 @@
           pdfCanvas.height = Math.floor(viewport.height);
           pdfCanvas.style.width = cssW + 'px';
           pdfCanvas.style.height = cssH + 'px';
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(0, 0, pdfCanvas.width, pdfCanvas.height);
 
@@ -2330,8 +2690,9 @@
           if (placeholder) placeholder.classList.add('hidden');
 
           if (annoCanvas) {
-            annoCanvas.width = pdfCanvas.width;
-            annoCanvas.height = pdfCanvas.height;
+            const annoScale = Math.min(1, 1400 / Math.max(pdfCanvas.width, pdfCanvas.height, 1));
+            annoCanvas.width = Math.max(1, Math.floor(pdfCanvas.width * annoScale));
+            annoCanvas.height = Math.max(1, Math.floor(pdfCanvas.height * annoScale));
             annoCanvas.style.width = cssW + 'px';
             annoCanvas.style.height = cssH + 'px';
             redrawAnnotationsForPage(pageNum, annoCanvas);
@@ -2349,10 +2710,12 @@
         const slots = stack.querySelectorAll('.pdf-page-slot');
         slots.forEach(function (slot) {
           const pNum = parseInt(slot.getAttribute('data-page-num'), 10);
-          if (Math.abs(pNum - centerPage) > 8 && pageRenderedScale[pNum]) {
+          if (Math.abs(pNum - centerPage) > 3 && pageRenderedScale[pNum]) {
             const pdfCanvas = slot.querySelector('.pdf-page-canvas');
+            const annoCanvas = slot.querySelector('.anno-page-canvas');
             const placeholder = slot.querySelector('.pdf-page-placeholder');
             if (pdfCanvas) { pdfCanvas.width = 1; pdfCanvas.height = 1; }
+            if (annoCanvas) { annoCanvas.width = 1; annoCanvas.height = 1; }
             if (placeholder) placeholder.classList.remove('hidden');
             delete pageRenderedScale[pNum];
           }
@@ -2378,8 +2741,8 @@
             minDist = dist;
             closestPage = pNum;
           }
-          if (top + slot.offsetHeight >= viewTop - 600 && top <= viewTop + scrollArea.clientHeight + 900) {
-            renderSinglePageSlot(pNum);
+          if (top + slot.offsetHeight >= viewTop - 250 && top <= viewTop + scrollArea.clientHeight + 350) {
+            enqueuePageRender(pNum);
           }
         });
 
@@ -2400,6 +2763,7 @@
         });
         pageRenderTasks = {};
         pageRenderedScale = {};
+        pageRenderQueue = [];
         if (pageObserver) { pageObserver.disconnect(); pageObserver = null; }
 
         try {
@@ -2441,7 +2805,7 @@
                 if (pNum) renderSinglePageSlot(pNum);
               }
             });
-          }, { root: scrollArea, rootMargin: '800px 0px' });
+          }, { root: scrollArea, rootMargin: '250px 0px' });
 
           stack.querySelectorAll('.pdf-page-slot').forEach(function (sl) {
             pageObserver.observe(sl);
@@ -3163,6 +3527,7 @@
         readerState.isRendering = false;
         readerState.pendingPage = null;
         if (isReaderFullScreen) setReaderFullScreen(false);
+        const nd = document.getElementById('neboPageDrawer'); if (nd) nd.classList.add('hidden');
         document.getElementById('pdfReaderModal').classList.add('hidden');
       });
 
@@ -3206,15 +3571,25 @@
 
       function applyReaderThemeToPages() {
         const stack = document.getElementById('pdfPagesStack');
+        const driveWrap = document.getElementById('driveAnnoWrap');
         const btn = document.getElementById('btnReaderTheme');
+        const modal = document.getElementById('pdfReaderModal');
+        if (modal) {
+          modal.classList.remove('nebo-warm', 'nebo-night');
+        }
         if (state.readerTheme === 'warm') {
-          if (stack) stack.style.filter = 'sepia(0.28) brightness(0.96)';
+          if (modal) modal.classList.add('nebo-warm');
+          if (stack) stack.style.filter = 'sepia(0.24) brightness(0.97)';
+          if (driveWrap) driveWrap.style.filter = 'sepia(0.24) brightness(0.97)';
           if (btn) btn.textContent = 'Warm';
         } else if (state.readerTheme === 'night') {
+          if (modal) modal.classList.add('nebo-night');
           if (stack) stack.style.filter = 'invert(0.9) hue-rotate(180deg)';
+          if (driveWrap) driveWrap.style.filter = 'invert(0.9) hue-rotate(180deg)';
           if (btn) btn.textContent = 'Night';
         } else {
           if (stack) stack.style.filter = 'none';
+          if (driveWrap) driveWrap.style.filter = 'none';
           if (btn) btn.textContent = 'Day';
         }
       }
@@ -3310,16 +3685,19 @@
         }
       });
 
-      // 2-Finger Pinch-to-Zoom (up to 600%, Page-Only!) + 1-Finger Swipe Slide on PDF Reader Viewport
+      // Nebo-Style 2-Finger Pan/Scroll + 2-Finger Pinch-to-Zoom (works seamlessly EVEN while Pen/Marker/Eraser is active!)
       (function setupPdfGestures() {
         const scrollArea = document.getElementById('readerScrollArea');
         const wrapper = document.getElementById('pdfCanvasWrapper');
         if (!scrollArea) return;
 
         let isPinching = false;
+        let isZoomGesture = false;
         let pinchStartDist = 0;
         let pinchStartScale = 1.0;
         let pinchTargetScale = 1.0;
+        let lastMidX = 0;
+        let lastMidY = 0;
         let pinchAnchor = null;
 
         function getTouchDist(t1, t2) {
@@ -3328,18 +3706,37 @@
           return Math.sqrt(dx * dx + dy * dy);
         }
 
+        function cancelAccidentalStrokeOnTwoFingers() {
+          if (annoState.isDrawing && annoState.currentStroke && readerState.currentItem) {
+            const pNum = annoState.drawingPage;
+            const cEl = annoState.drawingCanvas;
+            const key = readerState.currentItem.id + '_p' + pNum;
+            if (state.annotations[key] && annoState.currentStroke.points && annoState.currentStroke.points.length <= 4) {
+              const idx = state.annotations[key].lastIndexOf(annoState.currentStroke);
+              if (idx !== -1) state.annotations[key].splice(idx, 1);
+            }
+            annoState.isDrawing = false;
+            annoState.currentStroke = null;
+            annoState.drawingPage = null;
+            annoState.drawingCanvas = null;
+            if (pNum && cEl) redrawAnnotationsForPage(pNum, cEl);
+          }
+        }
+
         scrollArea.addEventListener('touchstart', function (e) {
           if (e.touches.length === 2) {
+            cancelAccidentalStrokeOnTwoFingers();
             isPinching = true;
+            isZoomGesture = false;
             pinchStartDist = getTouchDist(e.touches[0], e.touches[1]) || 1;
             pinchStartScale = readerState.scale;
             pinchTargetScale = readerState.scale;
 
             const rect = scrollArea.getBoundingClientRect();
-            const midClientX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-            const midClientY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-            const viewX = midClientX - rect.left;
-            const viewY = midClientY - rect.top;
+            lastMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+            lastMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            const viewX = lastMidX - rect.left;
+            const viewY = lastMidY - rect.top;
 
             if (wrapper) {
               const originX = scrollArea.scrollLeft + viewX - wrapper.offsetLeft;
@@ -3359,15 +3756,43 @@
         scrollArea.addEventListener('touchmove', function (e) {
           if (isPinching && e.touches.length === 2) {
             e.preventDefault();
+            const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+            const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            const dx = midX - lastMidX;
+            const dy = midY - lastMidY;
+            lastMidX = midX;
+            lastMidY = midY;
+
+            // 2-Finger Smooth Scroll / Pan (works even while Pen / Marker / Eraser is selected!)
+            scrollArea.scrollLeft = Math.max(0, scrollArea.scrollLeft - dx);
+            scrollArea.scrollTop = Math.max(0, scrollArea.scrollTop - dy);
+
             const dist = getTouchDist(e.touches[0], e.touches[1]);
             const factor = dist / (pinchStartDist || 1);
-            pinchTargetScale = Math.max(0.5, Math.min(12.0, Math.round(pinchStartScale * factor * 100) / 100));
-            const visualRatio = pinchTargetScale / (pinchStartScale || 1);
-            if (wrapper) {
-              wrapper.style.transform = 'scale(' + visualRatio + ')';
+            if (!isZoomGesture && Math.abs(factor - 1) > 0.07) {
+              isZoomGesture = true;
             }
-            const zLbl = document.getElementById('zoomLabel');
-            if (zLbl) zLbl.textContent = Math.round(pinchTargetScale * 100) + '%';
+            if (isZoomGesture) {
+              pinchTargetScale = Math.max(0.5, Math.min(12.0, Math.round(pinchStartScale * factor * 100) / 100));
+              const visualRatio = pinchTargetScale / (pinchStartScale || 1);
+              if (wrapper) {
+                const rect = scrollArea.getBoundingClientRect();
+                const viewX = midX - rect.left;
+                const viewY = midY - rect.top;
+                const originX = scrollArea.scrollLeft + viewX - wrapper.offsetLeft;
+                const originY = scrollArea.scrollTop + viewY - wrapper.offsetTop;
+                wrapper.style.transformOrigin = originX + 'px ' + originY + 'px';
+                wrapper.style.transform = 'scale(' + visualRatio + ')';
+                pinchAnchor = {
+                  viewX: viewX,
+                  viewY: viewY,
+                  ratioX: originX / (wrapper.offsetWidth || 1),
+                  ratioY: originY / (wrapper.offsetHeight || 1)
+                };
+              }
+              const zLbl = document.getElementById('zoomLabel');
+              if (zLbl) zLbl.textContent = Math.round(pinchTargetScale * 100) + '%';
+            }
           }
         }, { passive: false });
 
@@ -3377,17 +3802,18 @@
             if (wrapper) {
               wrapper.style.transform = '';
             }
-            if (Math.abs(pinchTargetScale - readerState.scale) >= 0.04) {
+            if (isZoomGesture && Math.abs(pinchTargetScale - readerState.scale) >= 0.05) {
               readerState.scale = pinchTargetScale;
               updateZoomLabel();
               renderReaderPage(undefined, pinchAnchor);
             } else {
               updateZoomLabel();
+              if (readerState.pdfDoc) renderVisiblePagesNow();
             }
+            isZoomGesture = false;
             pinchAnchor = null;
             return;
           }
-          // Continuous Google-PDF style vertical scroll handles page transitions smoothly natively!
         }, { passive: true });
       })();
 
@@ -3562,6 +3988,11 @@
           const key = readerState.currentItem.id + '_p' + pageNum;
           if (!state.annotations[key]) state.annotations[key] = [];
           const pt = getNormalizedPoint(e, annoCanvas);
+          if (annoState.tool === 'text') {
+            openNeboTextModal(pageNum, annoCanvas, pt);
+            return;
+          }
+          if (typeof neboRedoStacks !== 'undefined') neboRedoStacks[key] = [];
           const cfg = getActiveToolCfg();
           const presets = TOOL_SIZE_PRESETS[annoState.tool] || TOOL_SIZE_PRESETS.pen;
           const actualSize = presets[cfg.sizeIdx || 0] || 4;
@@ -3579,13 +4010,27 @@
           redrawAnnotationsForPage(pageNum, annoCanvas);
         }
 
+        let drawRafPending = false;
         function moveDraw(e) {
           if (!annoState.isDrawing || !annoState.currentStroke || annoState.drawingPage !== pageNum) return;
           if (e.touches && e.touches.length > 1) return;
           e.preventDefault();
           const pt = getNormalizedPoint(e, annoCanvas);
-          annoState.currentStroke.points.push(pt);
-          redrawAnnotationsForPage(pageNum, annoCanvas);
+          const pts = annoState.currentStroke.points;
+          if (pts.length > 0) {
+            const last = pts[pts.length - 1];
+            const dx = (pt.x - last.x) * annoCanvas.width;
+            const dy = (pt.y - last.y) * annoCanvas.height;
+            if ((dx * dx + dy * dy) < 2.25) return; // skip sub-1.5px jitter
+          }
+          pts.push(pt);
+          if (!drawRafPending) {
+            drawRafPending = true;
+            requestAnimationFrame(function () {
+              drawRafPending = false;
+              redrawAnnotationsForPage(pageNum, annoCanvas);
+            });
+          }
         }
 
         function endDraw() {
@@ -3599,10 +4044,12 @@
 
         annoCanvas.addEventListener('mousedown', startDraw);
         annoCanvas.addEventListener('mousemove', moveDraw);
-        window.addEventListener('mouseup', endDraw);
+        annoCanvas.addEventListener('mouseup', endDraw);
+        annoCanvas.addEventListener('mouseleave', endDraw);
         annoCanvas.addEventListener('touchstart', startDraw, { passive: false });
         annoCanvas.addEventListener('touchmove', moveDraw, { passive: false });
         annoCanvas.addEventListener('touchend', endDraw);
+        annoCanvas.addEventListener('touchcancel', endDraw);
       }
 
       function renderStrokeOnContext(ctx, st, w, h) {
@@ -3662,13 +4109,54 @@
           }
         }
 
-        ctx.beginPath();
-        ctx.moveTo(st.points[0].x * w, st.points[0].y * h);
-        for (let i = 1; i < st.points.length; i++) {
-          ctx.lineTo(st.points[i].x * w, st.points[i].y * h);
+        // Support Nebo-style typed text note annotations
+        if (st.tool === 'text' && st.text) {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.globalAlpha = 1;
+          const px = st.points[0].x * w;
+          const py = st.points[0].y * h;
+          const fontSize = Math.max(14, Math.round((w / 520) * (st.size || 15)));
+          ctx.font = '600 ' + fontSize + 'px Inter, system-ui, sans-serif';
+          const lines = String(st.text).split('\n');
+          const pad = Math.round(fontSize * 0.45);
+          let maxW = 0;
+          lines.forEach(function (ln) { maxW = Math.max(maxW, ctx.measureText(ln).width); });
+          const boxH = lines.length * (fontSize * 1.3) + pad * 1.4;
+          const boxW = maxW + pad * 2;
+          ctx.fillStyle = 'rgba(254, 249, 195, 0.96)';
+          ctx.strokeStyle = st.color || '#2563eb';
+          ctx.lineWidth = Math.max(1.5, w / 550);
+          ctx.beginPath();
+          ctx.rect(px, py - fontSize, boxW, boxH);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = st.color || '#1e293b';
+          lines.forEach(function (ln, li) {
+            ctx.fillText(ln, px + pad, py + li * (fontSize * 1.3));
+          });
+          ctx.restore();
+          return;
         }
+
+        // Nebo-style silky quadratic Bezier curve smoothing
+        ctx.beginPath();
+        const p0x = st.points[0].x * w;
+        const p0y = st.points[0].y * h;
+        ctx.moveTo(p0x, p0y);
         if (st.points.length === 1) {
-          ctx.lineTo(st.points[0].x * w + 0.5, st.points[0].y * h + 0.5);
+          ctx.lineTo(p0x + 0.5, p0y + 0.5);
+        } else if (st.points.length === 2) {
+          ctx.lineTo(st.points[1].x * w, st.points[1].y * h);
+        } else {
+          for (let i = 1; i < st.points.length - 1; i++) {
+            const cx = st.points[i].x * w;
+            const cy = st.points[i].y * h;
+            const nx = (cx + st.points[i + 1].x * w) / 2;
+            const ny = (cy + st.points[i + 1].y * h) / 2;
+            ctx.quadraticCurveTo(cx, cy, nx, ny);
+          }
+          const last = st.points[st.points.length - 1];
+          ctx.lineTo(last.x * w, last.y * h);
         }
         ctx.stroke();
         ctx.restore();
@@ -3823,15 +4311,16 @@
           hand: 'toolHand',
           pen: 'toolPen',
           highlighter: 'toolHighlighter',
-          eraser: 'toolEraser'
+          eraser: 'toolEraser',
+          text: 'toolTextNote'
         };
         Object.keys(map).forEach(function (k) {
           const btn = document.getElementById(map[k]);
           if (!btn) return;
           if (k === toolName) {
-            btn.className = 'p-2 rounded-lg bg-indigo-600 text-white transition flex items-center gap-1 text-xs font-semibold';
+            btn.className = 'px-2.5 py-1.5 rounded-full bg-blue-600 text-white shadow-sm transition flex items-center gap-1 text-xs font-semibold';
           } else {
-            btn.className = 'p-2 rounded-lg text-slate-300 hover:bg-slate-800 transition flex items-center gap-1 text-xs font-semibold';
+            btn.className = 'px-2.5 py-1.5 rounded-full text-slate-600 hover:bg-slate-100 transition flex items-center gap-1 text-xs font-semibold';
           }
         });
         if (annoCanvas) {
@@ -3983,17 +4472,145 @@
       document.getElementById('toolPen').addEventListener('click', function () { setAnnotationTool('pen', true); });
       document.getElementById('toolHighlighter').addEventListener('click', function () { setAnnotationTool('highlighter', true); });
       document.getElementById('toolEraser').addEventListener('click', function () { setAnnotationTool('eraser', true); });
+      document.getElementById('toolTextNote').addEventListener('click', function () {
+        setAnnotationTool('text', false);
+        toggleToolSettingsPopover(false);
+        showToast('Tap anywhere on the PDF page to add a typed note');
+      });
       document.getElementById('btnToolSettings').addEventListener('click', function () { toggleToolSettingsPopover(); });
       document.getElementById('closeToolSettingsPopover').addEventListener('click', function () { toggleToolSettingsPopover(false); });
+
+      const neboRedoStacks = {};
+      let pendingNeboTextTarget = null;
+
+      function openNeboTextModal(pageNum, annoCanvas, pt) {
+        pendingNeboTextTarget = { pageNum: pageNum, annoCanvas: annoCanvas, pt: pt };
+        const inp = document.getElementById('neboTextInput');
+        if (inp) inp.value = '';
+        document.getElementById('neboTextModal').classList.remove('hidden');
+        setTimeout(function () { if (inp) inp.focus(); }, 50);
+      }
+
+      document.getElementById('cancelNeboTextBtn').addEventListener('click', function () {
+        pendingNeboTextTarget = null;
+        document.getElementById('neboTextModal').classList.add('hidden');
+      });
+
+      document.getElementById('saveNeboTextBtn').addEventListener('click', function () {
+        const inp = document.getElementById('neboTextInput');
+        const txt = inp ? inp.value.trim() : '';
+        if (!txt || !pendingNeboTextTarget || !readerState.currentItem) {
+          document.getElementById('neboTextModal').classList.add('hidden');
+          return;
+        }
+        const t = pendingNeboTextTarget;
+        const key = readerState.currentItem.id + '_p' + t.pageNum;
+        if (!state.annotations[key]) state.annotations[key] = [];
+        neboRedoStacks[key] = [];
+        const cfg = getActiveToolCfg();
+        state.annotations[key].push({
+          tool: 'text',
+          text: txt,
+          color: (cfg && cfg.color) || '#1d4ed8',
+          size: 15,
+          points: [t.pt]
+        });
+        safeSet(STORAGE_KEY_ANNOTATIONS, state.annotations);
+        redrawAnnotationsForPage(t.pageNum, t.annoCanvas);
+        pendingNeboTextTarget = null;
+        document.getElementById('neboTextModal').classList.add('hidden');
+        showToast('Text note added!');
+      });
 
       document.getElementById('btnAnnoUndo').addEventListener('click', function () {
         const key = getAnnoKey();
         if (key && state.annotations[key] && state.annotations[key].length > 0) {
-          state.annotations[key].pop();
+          const popped = state.annotations[key].pop();
+          if (!neboRedoStacks[key]) neboRedoStacks[key] = [];
+          neboRedoStacks[key].push(popped);
           safeSet(STORAGE_KEY_ANNOTATIONS, state.annotations);
           redrawAnnotations();
         }
       });
+
+      document.getElementById('btnAnnoRedo').addEventListener('click', function () {
+        const key = getAnnoKey();
+        if (key && neboRedoStacks[key] && neboRedoStacks[key].length > 0) {
+          if (!state.annotations[key]) state.annotations[key] = [];
+          state.annotations[key].push(neboRedoStacks[key].pop());
+          safeSet(STORAGE_KEY_ANNOTATIONS, state.annotations);
+          redrawAnnotations();
+        }
+      });
+
+      // Nebo Slide-Out Page Navigator Drawer
+      function renderNeboPageGrid() {
+        const grid = document.getElementById('neboPageGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        const total = Math.max(1, readerState.totalPages || 1);
+        for (let p = 1; p <= total; p++) {
+          const isCur = p === readerState.currentPage;
+          const hasNotes = readerState.currentItem && state.annotations[readerState.currentItem.id + '_p' + p] && state.annotations[readerState.currentItem.id + '_p' + p].length > 0;
+          const tile = document.createElement('button');
+          tile.type = 'button';
+          tile.className = 'relative h-16 rounded-xl border text-xs font-bold flex flex-col items-center justify-center transition ' +
+            (isCur ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-slate-50 hover:bg-blue-50 text-slate-700 border-slate-200');
+          tile.innerHTML = '<span>' + p + '</span>' +
+            (hasNotes ? '<span class="w-1.5 h-1.5 rounded-full mt-1 ' + (isCur ? 'bg-amber-300' : 'bg-blue-500') + '"></span>' : '');
+          tile.addEventListener('click', function () {
+            document.getElementById('neboPageDrawer').classList.add('hidden');
+            scrollToPage(p, true);
+          });
+          grid.appendChild(tile);
+        }
+      }
+
+      document.getElementById('btnNeboPageDrawer').addEventListener('click', function () {
+        const drawer = document.getElementById('neboPageDrawer');
+        if (!drawer) return;
+        const willOpen = drawer.classList.contains('hidden');
+        drawer.classList.toggle('hidden');
+        if (willOpen) renderNeboPageGrid();
+      });
+
+      document.getElementById('closeNeboPageDrawer').addEventListener('click', function () {
+        document.getElementById('neboPageDrawer').classList.add('hidden');
+      });
+
+      // Nebo Double-Tap to Zoom (toggles smoothly between 100% Fit Width and 200% zoomed-in)
+      (function setupNeboDoubleTapZoom() {
+        const scrollArea = document.getElementById('readerScrollArea');
+        if (!scrollArea) return;
+        let lastTapTs = 0;
+        scrollArea.addEventListener('touchend', function (e) {
+          if (annoState.tool !== 'hand' || !readerState.pdfDoc) return;
+          if (e.changedTouches && e.changedTouches.length === 1 && e.touches.length === 0) {
+            const now = Date.now();
+            if (now - lastTapTs < 280) {
+              lastTapTs = 0;
+              const t = e.changedTouches[0];
+              const rect = scrollArea.getBoundingClientRect();
+              const wrapper = document.getElementById('pdfCanvasWrapper');
+              const prevW = (wrapper ? wrapper.offsetWidth : scrollArea.clientWidth) || 1;
+              const prevH = (wrapper ? wrapper.offsetHeight : scrollArea.clientHeight) || 1;
+              const viewX = t.clientX - rect.left;
+              const viewY = t.clientY - rect.top;
+              const anchor = {
+                viewX: viewX,
+                viewY: viewY,
+                ratioX: (scrollArea.scrollLeft + viewX - (wrapper ? wrapper.offsetLeft : 0)) / prevW,
+                ratioY: (scrollArea.scrollTop + viewY - (wrapper ? wrapper.offsetTop : 0)) / prevH
+              };
+              readerState.scale = readerState.scale > 1.3 ? 1.0 : 2.0;
+              updateZoomLabel();
+              renderReaderPage(undefined, anchor);
+            } else {
+              lastTapTs = now;
+            }
+          }
+        }, { passive: true });
+      })();
 
       document.getElementById('btnAnnoClear').addEventListener('click', function () {
         const key = getAnnoKey();
@@ -4008,6 +4625,7 @@
       // Re-render cards when reader closes so updated "Resume p.X" badge appears immediately
       document.getElementById('closeReaderModal').addEventListener('click', function () {
         renderPdfs();
+        if (typeof renderPersonalPdfs === 'function') renderPersonalPdfs();
       });
 
       buildColorSwatches();
@@ -4901,9 +5519,523 @@
       window.addEventListener('load', function () { setTimeout(hideAppSplash, 350); });
       setTimeout(hideAppSplash, 1400);
 
+      // === Personal Offline PDF Organizer Engine (100% Local Phone Storage, Zero Backend/Firebase) ===
+      const PERSONAL_DB_NAME = 'r_education_personal_offline_db';
+      const PERSONAL_DB_STORE = 'personal_pdf_blobs';
+      const STORAGE_KEY_PERSONAL_SUBJECTS = 'r_edu_personal_subjects_v1';
+      const STORAGE_KEY_PERSONAL_PDFS = 'r_edu_personal_pdfs_v1';
+
+      const DEFAULT_PERSONAL_SUBJECTS = [
+        { id: 'p_math', name: 'Math', tagline: 'My Offline Notes', color: 'indigo' },
+        { id: 'p_english', name: 'English', tagline: 'Grammar & Vocab', color: 'sky' },
+        { id: 'p_gs', name: 'GS', tagline: 'GK, Polity & Sci', color: 'emerald' },
+        { id: 'p_reasoning', name: 'Reasoning', tagline: 'Practice Sheets', color: 'violet' },
+        { id: 'p_computer', name: 'Computer', tagline: 'Notes & PYQ', color: 'rose' },
+        { id: 'p_my_notes', name: 'My Notes', tagline: 'Personal PDFs', color: 'amber' }
+      ];
+
+      let personalState = {
+        activeTab: 'online', // 'online' | 'personal'
+        subjects: [],
+        pdfs: [],
+        selectedSubject: 'ALL',
+        searchQuery: '',
+        sortOrder: 'newest',
+        editingSubjectId: null,
+        pendingDelete: null, // { type: 'pdf'|'subject', id: '...' }
+        memoryBlobs: {}
+      };
+
+      function openPersonalDb() {
+        return new Promise(function (resolve, reject) {
+          try {
+            if (!window.indexedDB) return reject(new Error('No IndexedDB'));
+            const req = indexedDB.open(PERSONAL_DB_NAME, 1);
+            req.onupgradeneeded = function (e) {
+              const db = e.target.result;
+              if (!db.objectStoreNames.contains(PERSONAL_DB_STORE)) {
+                db.createObjectStore(PERSONAL_DB_STORE);
+              }
+            };
+            req.onsuccess = function (e) { resolve(e.target.result); };
+            req.onerror = function (e) { reject(e.target.error); };
+          } catch (err) { reject(err); }
+        });
+      }
+
+      async function savePersonalPdfBytes(id, uint8Array) {
+        personalState.memoryBlobs[id] = uint8Array;
+        try {
+          const db = await openPersonalDb();
+          await new Promise(function (resolve, reject) {
+            const tx = db.transaction(PERSONAL_DB_STORE, 'readwrite');
+            tx.objectStore(PERSONAL_DB_STORE).put(uint8Array, id);
+            tx.oncomplete = resolve;
+            tx.onerror = reject;
+          });
+        } catch (e) { /* memory fallback populated */ }
+      }
+
+      async function loadPersonalPdfBytes(id) {
+        if (personalState.memoryBlobs[id]) return personalState.memoryBlobs[id];
+        try {
+          const db = await openPersonalDb();
+          const data = await new Promise(function (resolve, reject) {
+            const tx = db.transaction(PERSONAL_DB_STORE, 'readonly');
+            const req = tx.objectStore(PERSONAL_DB_STORE).get(id);
+            req.onsuccess = function () { resolve(req.result); };
+            req.onerror = reject;
+          });
+          if (data) {
+            personalState.memoryBlobs[id] = data;
+            return data;
+          }
+        } catch (e) {}
+        return null;
+      }
+
+      async function deletePersonalPdfBytes(id) {
+        delete personalState.memoryBlobs[id];
+        try {
+          const db = await openPersonalDb();
+          await new Promise(function (resolve, reject) {
+            const tx = db.transaction(PERSONAL_DB_STORE, 'readwrite');
+            tx.objectStore(PERSONAL_DB_STORE).delete(id);
+            tx.oncomplete = resolve;
+            tx.onerror = reject;
+          });
+        } catch (e) {}
+      }
+
+      function initPersonalData() {
+        const savedSubjects = safeGet(STORAGE_KEY_PERSONAL_SUBJECTS, null);
+        personalState.subjects = Array.isArray(savedSubjects) && savedSubjects.length
+          ? savedSubjects
+          : DEFAULT_PERSONAL_SUBJECTS.slice();
+        const savedPdfs = safeGet(STORAGE_KEY_PERSONAL_PDFS, []);
+        personalState.pdfs = Array.isArray(savedPdfs) ? savedPdfs : [];
+      }
+
+      function setStudentViewTab(tab) {
+        personalState.activeTab = (tab === 'personal' && !state.isAdmin) ? 'personal' : 'online';
+        const onlineSec = document.getElementById('onlineLibrarySection');
+        const personalSec = document.getElementById('personalOfflineSection');
+        const btnOnline = document.getElementById('tabOnlineLibrary');
+        const btnPersonal = document.getElementById('tabPersonalOffline');
+
+        if (personalState.activeTab === 'personal') {
+          if (onlineSec) onlineSec.classList.add('hidden');
+          if (personalSec) personalSec.classList.remove('hidden');
+          if (btnOnline) btnOnline.className = 'flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-100';
+          if (btnPersonal) btnPersonal.className = 'flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 bg-emerald-600 text-white shadow-sm';
+          renderPersonalOrganizer();
+        } else {
+          if (onlineSec) onlineSec.classList.remove('hidden');
+          if (personalSec) personalSec.classList.add('hidden');
+          if (btnOnline) btnOnline.className = 'flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-sm';
+          if (btnPersonal) btnPersonal.className = 'flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-100';
+        }
+      }
+
+      function renderPersonalStorageBadge() {
+        const totalBytes = personalState.pdfs.reduce(function (sum, p) { return sum + (Number(p.sizeBytes) || 0); }, 0);
+        const count = personalState.pdfs.length;
+        const badge = document.getElementById('personalStorageBadge');
+        if (badge) {
+          badge.textContent = count + (count === 1 ? ' PDF' : ' PDFs') + ' • ' + (totalBytes ? formatSize(totalBytes) : '0 KB') + ' on Phone';
+        }
+        const tabBadge = document.getElementById('tabPersonalCountBadge');
+        if (tabBadge) tabBadge.textContent = String(count);
+      }
+
+      function renderPersonalSubjects() {
+        const grid = document.getElementById('personalSubjectsGrid');
+        const select = document.getElementById('personalPdfSubjectInput');
+        if (!grid) return;
+        const prevSel = select ? select.value : '';
+        grid.innerHTML = '';
+        if (select) select.innerHTML = '';
+
+        personalState.subjects.forEach(function (subj) {
+          const count = personalState.pdfs.filter(function (p) { return p.subjectId === subj.id; }).length;
+          const isActive = personalState.selectedSubject === subj.id;
+          const c = colorClasses(subj.color);
+
+          const card = document.createElement('div');
+          card.className =
+            'relative text-left p-3.5 rounded-2xl border transition flex flex-col justify-between gap-2 cursor-pointer ' +
+            (isActive
+              ? 'bg-emerald-600 text-white border-emerald-600 shadow-md ring-2 ring-emerald-300'
+              : 'bg-white hover:border-emerald-300 hover:shadow-sm border-slate-200 text-slate-800');
+          card.innerHTML =
+            '<div class="flex items-center justify-between w-full gap-1">' +
+              '<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold ' + (isActive ? 'bg-white/20 text-white' : c.badge) + '">' + escapeHtml(subj.name) + '</span>' +
+              '<div class="flex items-center gap-1">' +
+                '<span class="text-xs font-bold ' + (isActive ? 'text-emerald-100' : 'text-slate-400') + '">' + count + '</span>' +
+                '<button type="button" data-edit-psubj="' + escapeHtml(subj.id) + '" title="Edit or Delete Subject" class="p-1 rounded-md transition ' + (isActive ? 'text-white/80 hover:bg-white/20' : 'text-slate-400 hover:text-emerald-700 hover:bg-emerald-50') + '">' +
+                  '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>' +
+                '</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="text-[11px] truncate w-full ' + (isActive ? 'text-emerald-100' : 'text-slate-500') + '">' + escapeHtml(subj.tagline || 'Personal Offline') + '</div>';
+
+          card.addEventListener('click', function (ev) {
+            const editBtn = ev.target.closest('[data-edit-psubj]');
+            if (editBtn) {
+              ev.stopPropagation();
+              openPersonalSubjectModal(subj.id);
+              return;
+            }
+            personalState.selectedSubject = personalState.selectedSubject === subj.id ? 'ALL' : subj.id;
+            renderPersonalOrganizer();
+          });
+          grid.appendChild(card);
+
+          if (select) {
+            const opt = document.createElement('option');
+            opt.value = subj.id;
+            opt.textContent = subj.name;
+            select.appendChild(opt);
+          }
+        });
+
+        if (select) {
+          if (prevSel && personalState.subjects.some(function (s) { return s.id === prevSel; })) {
+            select.value = prevSel;
+          } else if (personalState.selectedSubject !== 'ALL' && personalState.subjects.some(function (s) { return s.id === personalState.selectedSubject; })) {
+            select.value = personalState.selectedSubject;
+          }
+        }
+      }
+
+      function renderPersonalPdfs() {
+        const grid = document.getElementById('personalPdfGrid');
+        const empty = document.getElementById('personalEmptyState');
+        const heading = document.getElementById('personalLibraryHeading');
+        const countLabel = document.getElementById('personalPdfCountLabel');
+        if (!grid) return;
+
+        let list = personalState.pdfs.slice();
+        if (personalState.selectedSubject !== 'ALL') {
+          list = list.filter(function (p) { return p.subjectId === personalState.selectedSubject; });
+          const subj = personalState.subjects.find(function (s) { return s.id === personalState.selectedSubject; });
+          if (heading) heading.textContent = (subj ? subj.name : 'Subject') + ' — My Offline PDFs';
+        } else if (heading) {
+          heading.textContent = 'All My Offline PDFs';
+        }
+
+        if (personalState.searchQuery.trim()) {
+          const q = personalState.searchQuery.trim().toLowerCase();
+          list = list.filter(function (p) {
+            return (p.title || '').toLowerCase().includes(q) || (p.fileName || '').toLowerCase().includes(q);
+          });
+        }
+
+        if (personalState.sortOrder === 'title') {
+          list.sort(function (a, b) { return (a.title || '').localeCompare(b.title || ''); });
+        } else {
+          list.sort(function (a, b) { return (b.uploadedAt || 0) - (a.uploadedAt || 0); });
+        }
+
+        if (countLabel) countLabel.textContent = list.length + (list.length === 1 ? ' PDF' : ' PDFs');
+        grid.innerHTML = '';
+
+        if (!list.length) {
+          if (empty) empty.classList.remove('hidden');
+          return;
+        }
+        if (empty) empty.classList.add('hidden');
+
+        list.forEach(function (pdf) {
+          const subj = personalState.subjects.find(function (s) { return s.id === pdf.subjectId; }) || { name: 'My Notes', color: 'emerald' };
+          const c = colorClasses(subj.color);
+          const savedPg = state.readingProgress[pdf.id];
+          const resumeBadge = savedPg && savedPg > 1
+            ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">Pg ' + savedPg + '</span>'
+            : '';
+
+          const card = document.createElement('article');
+          card.className = 'bg-white rounded-2xl border border-slate-200 hover:border-emerald-300 shadow-sm hover:shadow-md transition p-4 flex flex-col justify-between gap-3.5 animate-fade-in';
+          card.innerHTML =
+            '<div class="space-y-2.5">' +
+              '<div class="flex items-start justify-between gap-2">' +
+                '<div class="flex flex-wrap items-center gap-1.5">' +
+                  '<span class="px-2 py-0.5 rounded-md text-[11px] font-bold ' + c.badge + '">' + escapeHtml(subj.name) + '</span>' +
+                  '<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Offline (Phone)</span>' +
+                  resumeBadge +
+                '</div>' +
+                '<span class="text-[11px] text-slate-400 shrink-0">' + formatDate(pdf.uploadedAt) + '</span>' +
+              '</div>' +
+              '<div class="flex items-start gap-3">' +
+                '<div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">' +
+                  '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>' +
+                '</div>' +
+                '<div class="min-w-0">' +
+                  '<h4 class="text-sm font-bold text-slate-900 leading-snug line-clamp-2">' + escapeHtml(pdf.title) + '</h4>' +
+                  '<p class="text-[11px] text-slate-500 mt-0.5 truncate">' + escapeHtml(pdf.fileName || '') + '</p>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">' +
+              '<span class="text-[11px] font-semibold text-slate-500">' + escapeHtml(pdf.sizeLabel || 'Offline PDF') + '</span>' +
+              '<div class="flex items-center gap-1.5">' +
+                '<button type="button" data-paction="read" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition">' +
+                  '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>' +
+                  'Read Offline' +
+                '</button>' +
+                '<button type="button" data-paction="delete" title="Delete from phone organizer" class="p-1.5 rounded-lg text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition">' +
+                  '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>' +
+                '</button>' +
+              '</div>' +
+            '</div>';
+
+          card.querySelector('[data-paction="read"]').addEventListener('click', function () {
+            openPdfReader(pdf);
+          });
+          card.querySelector('[data-paction="delete"]').addEventListener('click', function () {
+            personalState.pendingDelete = { type: 'pdf', id: pdf.id };
+            document.getElementById('personalDeleteTitle').textContent = 'Delete Offline PDF?';
+            document.getElementById('personalDeleteDesc').textContent = 'Remove "' + pdf.title + '" from your personal organizer? This frees up your phone storage.';
+            document.getElementById('personalDeleteModal').classList.remove('hidden');
+          });
+          grid.appendChild(card);
+        });
+      }
+
+      function renderPersonalOrganizer() {
+        renderPersonalStorageBadge();
+        renderPersonalSubjects();
+        renderPersonalPdfs();
+      }
+
+      function openPersonalUploadModal() {
+        renderPersonalSubjects();
+        document.getElementById('personalUploadForm').reset();
+        document.getElementById('personalSelectedFileLabel').textContent = 'Tap to pick 1 or more PDFs from phone';
+        document.getElementById('personalUploadStatus').classList.add('hidden');
+        if (personalState.selectedSubject !== 'ALL') {
+          const sel = document.getElementById('personalPdfSubjectInput');
+          if (sel) sel.value = personalState.selectedSubject;
+        }
+        document.getElementById('personalUploadModal').classList.remove('hidden');
+      }
+
+      function openPersonalSubjectModal(editId) {
+        personalState.editingSubjectId = editId || null;
+        const titleEl = document.getElementById('personalSubjectModalTitle');
+        const nameInp = document.getElementById('personalSubjectNameInput');
+        const tagInp = document.getElementById('personalSubjectTaglineInput');
+        const colorInp = document.getElementById('personalSubjectColorInput');
+        const delBtn = document.getElementById('btnDeletePersonalSubject');
+
+        if (editId) {
+          const subj = personalState.subjects.find(function (s) { return s.id === editId; });
+          if (!subj) return;
+          titleEl.textContent = 'Edit Offline Subject';
+          nameInp.value = subj.name || '';
+          tagInp.value = subj.tagline || '';
+          colorInp.value = subj.color || 'emerald';
+          delBtn.classList.remove('hidden');
+        } else {
+          titleEl.textContent = 'Add Offline Subject';
+          nameInp.value = '';
+          tagInp.value = '';
+          colorInp.value = 'emerald';
+          delBtn.classList.add('hidden');
+        }
+        document.getElementById('personalSubjectModal').classList.remove('hidden');
+      }
+
+      // Personal Offline Event Listeners
+      document.getElementById('tabOnlineLibrary').addEventListener('click', function () {
+        setStudentViewTab('online');
+      });
+      document.getElementById('tabPersonalOffline').addEventListener('click', function () {
+        setStudentViewTab('personal');
+      });
+      document.getElementById('btnPersonalAddPdf').addEventListener('click', openPersonalUploadModal);
+      document.getElementById('btnPersonalEmptyAdd').addEventListener('click', openPersonalUploadModal);
+      document.getElementById('btnPersonalAddSubject').addEventListener('click', function () {
+        openPersonalSubjectModal(null);
+      });
+      document.getElementById('btnPersonalShowAllSubjects').addEventListener('click', function () {
+        personalState.selectedSubject = 'ALL';
+        renderPersonalOrganizer();
+      });
+      document.getElementById('personalSearchInput').addEventListener('input', function (e) {
+        personalState.searchQuery = e.target.value;
+        renderPersonalPdfs();
+      });
+      document.getElementById('personalSortOrder').addEventListener('change', function (e) {
+        personalState.sortOrder = e.target.value;
+        renderPersonalPdfs();
+      });
+
+      document.getElementById('closePersonalUploadModal').addEventListener('click', function () {
+        document.getElementById('personalUploadModal').classList.add('hidden');
+      });
+      document.getElementById('cancelPersonalUploadBtn').addEventListener('click', function () {
+        document.getElementById('personalUploadModal').classList.add('hidden');
+      });
+
+      document.getElementById('personalPdfFileInput').addEventListener('change', function (e) {
+        const files = e.target.files;
+        const label = document.getElementById('personalSelectedFileLabel');
+        const titleInp = document.getElementById('personalPdfTitleInput');
+        if (!files || !files.length) {
+          label.textContent = 'Tap to pick 1 or more PDFs from phone';
+          return;
+        }
+        if (files.length === 1) {
+          label.textContent = files[0].name + ' (' + formatSize(files[0].size) + ')';
+          if (titleInp && !titleInp.value.trim()) {
+            titleInp.value = files[0].name.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ');
+          }
+        } else {
+          let totalSz = 0;
+          for (let i = 0; i < files.length; i++) totalSz += files[i].size;
+          label.textContent = files.length + ' PDF files selected (' + formatSize(totalSz) + ')';
+        }
+      });
+
+      document.getElementById('personalUploadForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const fileInp = document.getElementById('personalPdfFileInput');
+        const files = fileInp ? fileInp.files : null;
+        if (!files || !files.length) {
+          showToast('Please select at least one PDF file from your phone');
+          return;
+        }
+        const subjectId = document.getElementById('personalPdfSubjectInput').value;
+        const customTitle = document.getElementById('personalPdfTitleInput').value.trim();
+        const statusEl = document.getElementById('personalUploadStatus');
+        const submitBtn = document.getElementById('submitPersonalUploadBtn');
+
+        if (statusEl) {
+          statusEl.textContent = 'Saving to your phone storage...';
+          statusEl.classList.remove('hidden');
+        }
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+          let addedCount = 0;
+          for (let i = 0; i < files.length; i++) {
+            const f = files[i];
+            if (statusEl && files.length > 1) {
+              statusEl.textContent = 'Saving ' + (i + 1) + ' of ' + files.length + ' to phone storage...';
+            }
+            const buf = await f.arrayBuffer();
+            const bytes = new Uint8Array(buf);
+            const pid = 'ppdf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+            await savePersonalPdfBytes(pid, bytes);
+            const cleanName = f.name.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').trim() || 'Offline PDF';
+            personalState.pdfs.unshift({
+              id: pid,
+              isPersonal: true,
+              subjectId: subjectId,
+              title: (files.length === 1 && customTitle) ? customTitle : cleanName,
+              fileName: f.name,
+              sizeBytes: f.size,
+              sizeLabel: formatSize(f.size),
+              uploadedAt: Date.now() + i
+            });
+            addedCount++;
+          }
+          safeSet(STORAGE_KEY_PERSONAL_PDFS, personalState.pdfs);
+          document.getElementById('personalUploadModal').classList.add('hidden');
+          renderPersonalOrganizer();
+          showToast(addedCount === 1 ? 'PDF saved offline on your phone!' : (addedCount + ' PDFs saved offline on your phone!'));
+        } catch (err) {
+          console.error('Personal offline save error:', err);
+          showToast('Could not save PDF (check phone storage space)');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+          if (statusEl) statusEl.classList.add('hidden');
+        }
+      });
+
+      document.getElementById('closePersonalSubjectModal').addEventListener('click', function () {
+        document.getElementById('personalSubjectModal').classList.add('hidden');
+      });
+      document.getElementById('cancelPersonalSubjectBtn').addEventListener('click', function () {
+        document.getElementById('personalSubjectModal').classList.add('hidden');
+      });
+
+      document.getElementById('personalSubjectForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const name = document.getElementById('personalSubjectNameInput').value.trim();
+        const tagline = document.getElementById('personalSubjectTaglineInput').value.trim() || 'Personal Offline';
+        const color = document.getElementById('personalSubjectColorInput').value || 'emerald';
+        if (!name) return;
+
+        if (personalState.editingSubjectId) {
+          const idx = personalState.subjects.findIndex(function (s) { return s.id === personalState.editingSubjectId; });
+          if (idx !== -1) {
+            personalState.subjects[idx].name = name;
+            personalState.subjects[idx].tagline = tagline;
+            personalState.subjects[idx].color = color;
+          }
+          showToast('Offline subject updated!');
+        } else {
+          const newId = 'psubj_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5);
+          personalState.subjects.push({ id: newId, name: name, tagline: tagline, color: color });
+          personalState.selectedSubject = newId;
+          showToast('Offline subject "' + name + '" added!');
+        }
+        safeSet(STORAGE_KEY_PERSONAL_SUBJECTS, personalState.subjects);
+        document.getElementById('personalSubjectModal').classList.add('hidden');
+        renderPersonalOrganizer();
+      });
+
+      document.getElementById('btnDeletePersonalSubject').addEventListener('click', function () {
+        const sid = personalState.editingSubjectId;
+        if (!sid) return;
+        const subj = personalState.subjects.find(function (s) { return s.id === sid; });
+        const cnt = personalState.pdfs.filter(function (p) { return p.subjectId === sid; }).length;
+        personalState.pendingDelete = { type: 'subject', id: sid };
+        document.getElementById('personalSubjectModal').classList.add('hidden');
+        document.getElementById('personalDeleteTitle').textContent = 'Delete Subject "' + (subj ? subj.name : '') + '"?';
+        document.getElementById('personalDeleteDesc').textContent = cnt > 0
+          ? 'This will also remove ' + cnt + ' offline PDF(s) inside this subject from your phone organizer.'
+          : 'This will remove this personal offline subject.';
+        document.getElementById('personalDeleteModal').classList.remove('hidden');
+      });
+
+      document.getElementById('cancelPersonalDeleteBtn').addEventListener('click', function () {
+        personalState.pendingDelete = null;
+        document.getElementById('personalDeleteModal').classList.add('hidden');
+      });
+
+      document.getElementById('confirmPersonalDeleteBtn').addEventListener('click', async function () {
+        const target = personalState.pendingDelete;
+        if (!target) return;
+        if (target.type === 'pdf') {
+          personalState.pdfs = personalState.pdfs.filter(function (p) { return p.id !== target.id; });
+          safeSet(STORAGE_KEY_PERSONAL_PDFS, personalState.pdfs);
+          await deletePersonalPdfBytes(target.id);
+          showToast('Offline PDF deleted from phone storage');
+        } else if (target.type === 'subject') {
+          const toRemove = personalState.pdfs.filter(function (p) { return p.subjectId === target.id; });
+          for (let i = 0; i < toRemove.length; i++) {
+            await deletePersonalPdfBytes(toRemove[i].id);
+          }
+          personalState.pdfs = personalState.pdfs.filter(function (p) { return p.subjectId !== target.id; });
+          personalState.subjects = personalState.subjects.filter(function (s) { return s.id !== target.id; });
+          if (personalState.selectedSubject === target.id) personalState.selectedSubject = 'ALL';
+          safeSet(STORAGE_KEY_PERSONAL_PDFS, personalState.pdfs);
+          safeSet(STORAGE_KEY_PERSONAL_SUBJECTS, personalState.subjects);
+          showToast('Offline subject deleted');
+        }
+        personalState.pendingDelete = null;
+        document.getElementById('personalDeleteModal').classList.add('hidden');
+        renderPersonalOrganizer();
+      });
+
       // Boot
       initData();
+      initPersonalData();
       renderAll();
+      renderPersonalStorageBadge();
       // Automatically pull latest online PDFs on startup and every 25 seconds
       pullCatalogFromCloud(true);
       fetchChatMessages(false);
